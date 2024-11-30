@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-accommodations_amenities-table
+      author: Vitalii Pavlyk
+      changes:
+        - createTable:
+            tableName: accommodations_amenities
+            columns:
+              - column:
+                  name: accommodation_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amenity
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: accommodations_amenities
+            baseColumnNames: accommodation_id
+            referencedTableName: accommodations
+            referencedColumnNames: id
+            constraintName: accommodations_amenities_fk
