@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-addresses
+      author: Vitalii Pavlyk
+      changes:
+        - insert:
+            tableName: addresses
+            columns:
+              - column: { name: country, value: "USA"}
+              - column: { name: city, value: "Chicago"}
+              - column: { name: state, value: "Illinois"}
+              - column: { name: street, value: "Cicero"}
+              - column: { name: house_number, value: "49th Ave"}
+              - column: { name: postal_code, value: "60804"}
