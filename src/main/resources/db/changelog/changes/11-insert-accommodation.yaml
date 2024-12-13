@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-accommodations
+      author: Vitalii Pavlyk
+      changes:
+        - insert:
+            tableName: accommodations
+            columns:
+              - column: { name: type, value: "HOUSE" }
+              - column: { name: address_id, value: "1" }
+              - column: { name: size, value: "Studio" }
+              - column: { name: daily_rate, value: "23.00" }
+              - column: { name: availability, value: "1" }
