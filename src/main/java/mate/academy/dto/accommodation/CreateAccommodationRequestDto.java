@@ -12,7 +12,7 @@ import mate.academy.validation.ValidEnum;
 
 public record CreateAccommodationRequestDto(
         @NotBlank
-        @ValidEnum(enumClass = Accommodation.Type.class, message = "Invalid order status")
+        @ValidEnum(enumClass = Accommodation.Type.class, message = "Invalid type value")
         String type,
         @NotNull
         CreateAddressRequestDto addressDto,

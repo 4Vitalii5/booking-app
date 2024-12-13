@@ -8,7 +8,6 @@ import mate.academy.dto.address.CreateAddressRequestDto;
 import mate.academy.exception.DuplicateResourceException;
 import mate.academy.exception.EntityNotFoundException;
 import mate.academy.mapper.AccommodationMapper;
-import mate.academy.mapper.AddressMapper;
 import mate.academy.model.Accommodation;
 import mate.academy.repository.AccommodationRepository;
 import mate.academy.repository.AddressRepository;
@@ -22,7 +21,6 @@ public class AccommodationServiceImpl implements AccommodationService {
     private final AccommodationRepository accommodationRepository;
     private final AccommodationMapper accommodationMapper;
     private final AddressRepository addressRepository;
-    private final AddressMapper addressMapper;
 
     @Override
     public AccommodationDto save(CreateAccommodationRequestDto requestDto) {
@@ -48,8 +46,8 @@ public class AccommodationServiceImpl implements AccommodationService {
     @Override
     public AccommodationDto updateById(Long id, CreateAccommodationRequestDto requestDto) {
         Accommodation accommodation = getAccommodationById(id);
-        //checkAddressAvailability(requestDto.addressDto());
         accommodationMapper.updateAccommodationFromDto(requestDto, accommodation);
+        accommodationRepository.save(accommodation);
         return accommodationMapper.toDto(accommodation);
     }
 
@@ -60,7 +58,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     private Accommodation getAccommodationById(Long id) {
         return accommodationRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Can't find book by id: " + id)
+                new EntityNotFoundException("Can't find accommodation by id: " + id)
         );
     }
 

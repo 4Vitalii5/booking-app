@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-addresses-table
+      id: create-payments-table
       author: Vitalii Pavlyk
       changes:
         - createTable:
-            tableName: addresses
+            tableName: payments
             columns:
               - column:
                   name: id
@@ -14,36 +14,39 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: country
+                  name: status
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: city
+                  name: booking_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: session_url
+                  type: varchar(1024)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: session_id
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: state
-                  type: varchar(255)
+                  name: amount_to_pay
+                  type: decimal(19,2)
                   constraints:
                     nullable: false
               - column:
-                  name: street
-                  type: varchar(255)
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
                   constraints:
                     nullable: false
-              - column:
-                  name: house_number
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: postal_code
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-        - addUniqueConstraint:
-            columnNames: country, city, state, street, house_number, postal_code
-            tableName: addresses
-            constraintName: uc_address
+        - addForeignKeyConstraint:
+            baseTableName: payments
+            baseColumnNames: booking_id
+            referencedTableName: bookings
+            referencedColumnNames: id
+            constraintName: fk_payments_booking

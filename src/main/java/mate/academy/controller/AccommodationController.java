@@ -10,6 +10,7 @@ import mate.academy.dto.accommodation.CreateAccommodationRequestDto;
 import mate.academy.service.AccommodationService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccommodationController {
     private final AccommodationService accommodationService;
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping
     @Operation(summary = "Create a new accommodation",
             description = "Permits the addition of new accommodations.")
@@ -36,6 +38,7 @@ public class AccommodationController {
         return accommodationService.save(requestDto);
     }
 
+    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @GetMapping
     @Operation(summary = "Get all accommodations",
             description = "Provides a list of available accommodations.")
@@ -43,6 +46,7 @@ public class AccommodationController {
         return accommodationService.findAll(pageable);
     }
 
+    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @GetMapping("/{id}")
     @Operation(summary = "Get accommodation by ID",
             description = "Retrieves detailed information about a specific accommodation.")
@@ -50,6 +54,7 @@ public class AccommodationController {
         return accommodationService.findById(id);
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{id}")
     @Operation(summary = "Update accommodation by ID", description = "Allows updates to "
             + "accommodation details, including inventory management.")
@@ -59,6 +64,7 @@ public class AccommodationController {
         return accommodationService.updateById(id, requestDto);
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete accommodation by ID",

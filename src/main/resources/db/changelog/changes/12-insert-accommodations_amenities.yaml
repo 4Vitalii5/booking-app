@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: assign-amenities-to-accommodation
+      author: Vitalii Pavlyk
+      changes:
+        - insert:
+            tableName: accommodations_amenities
+            columns:
+              - column:
+                  name: accommodation_id
+                  value: 1
+              - column:
+                  name: amenities
+                  value: "pool"
+        - insert:
+            tableName: accommodations_amenities
+            columns:
+              - column:
+                  name: accommodation_id
+                  value: 1
+              - column:
+                  name: amenities
+                  value: "electricity"
