@@ -1,14 +1,18 @@
 package mate.academy.service;
 
+import java.util.List;
+import mate.academy.dto.booking.BookingDto;
 import mate.academy.dto.payment.CreatePaymentRequestDto;
 import mate.academy.dto.payment.PaymentDto;
+import mate.academy.dto.payment.PaymentWithoutSessionDto;
+import mate.academy.model.User;
 
 public interface PaymentService {
-    PaymentDto getPaymentInfo(Long userId, Long currentUserId);
+    List<PaymentWithoutSessionDto> getPaymentInfo(Long userId, User currentUser);
 
     PaymentDto createPayment(CreatePaymentRequestDto requestDto);
 
-    PaymentDto handleSuccessPayment(String sessionId);
+    PaymentWithoutSessionDto handleSuccessPayment(String sessionId);
 
-    PaymentDto handleCancelledPayment(String sessionId);
+    BookingDto handleCancelledPayment(String sessionId);
 }
