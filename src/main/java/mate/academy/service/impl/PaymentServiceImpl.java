@@ -33,7 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentWithoutSessionDto> getPaymentInfo(Long userId, User currentUser) {
-        return getBookingIds(userId, currentUser).stream()
+        return getBookingIdsByRole(userId, currentUser).stream()
                 .map(paymentRepository::findByBookingId)
                 .flatMap(Optional::stream)
                 .map(paymentMapper::toDtoWithoutSession)
@@ -77,13 +77,12 @@ public class PaymentServiceImpl implements PaymentService {
                 new EntityNotFoundException("Can't find payment with session id:" + sessionId));
     }
 
-    private List<Long> getBookingIds(Long userId, User currentUser) {
-        return isManager(currentUser) ?
-                getPaymentsByUserId(userId) :
-                getPaymentsByUserId(currentUser.getId());
+    private List<Long> getBookingIdsByRole(Long userId, User currentUser) {
+        return isManager(currentUser)
+                ? getBookingIdsByUserId(userId) : getBookingIdsByUserId(currentUser.getId());
     }
 
-    private List<Long> getPaymentsByUserId(Long userId) {
+    private List<Long> getBookingIdsByUserId(Long userId) {
         return bookingRepository.findAllByUserId(userId).stream()
                 .map(Booking::getId)
                 .toList();
