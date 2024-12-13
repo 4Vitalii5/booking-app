@@ -43,9 +43,7 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
-              - column:
-                  name: is_deleted
-                  type: bit
-                  defaultValueBoolean: false
-                  constraints:
-                    nullable: false
+        - addUniqueConstraint:
+            columnNames: country, city, state, street, house_number, postal_code
+            tableName: addresses
+            constraintName: uc_address
