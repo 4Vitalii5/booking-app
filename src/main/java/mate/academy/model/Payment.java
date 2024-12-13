@@ -34,9 +34,9 @@ public class Payment {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private URL sessionUrl;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String sessionId;
     @Column(nullable = false)
     private BigDecimal amountToPay;

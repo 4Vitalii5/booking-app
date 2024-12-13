@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
                     + " already exists");
         }
         Role role = roleRepository.findByRole(DEFAULT_ROLE).orElseThrow(
-                () -> new RegistrationException("Role: " + DEFAULT_ROLE + " not found")
+                () -> new EntityNotFoundException("Role: " + DEFAULT_ROLE + " not found")
         );
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Set.of(role));

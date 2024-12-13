@@ -17,7 +17,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             LocalDate checkInDate, LocalDate checkOutDate, Long accommodationId
     );
 
+    @EntityGraph(attributePaths = {"user"})
+    List<Booking> findAllByUserId(Long userId);
+
     List<Booking> findByUserId(Long id, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"user"})
     List<Booking> findAll(Specification<Booking> bookingSpecification, Pageable pageable);
 }
