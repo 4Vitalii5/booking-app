@@ -3,9 +3,12 @@ package mate.academy.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import mate.academy.dto.booking.BookingDto;
 import mate.academy.dto.payment.CreatePaymentRequestDto;
 import mate.academy.dto.payment.PaymentDto;
+import mate.academy.dto.payment.PaymentWithoutSessionDto;
 import mate.academy.model.User;
 import mate.academy.service.PaymentService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,10 +31,10 @@ public class PaymentController {
     @GetMapping
     @Operation(summary = "Get users payment information",
             description = "Retrieves payment information for users.")
-    public PaymentDto getPaymentInfo(@RequestParam("user_id") Long userId,
-                                     Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return paymentService.getPaymentInfo(userId, user.getId());
+    public List<PaymentWithoutSessionDto> getPaymentInfo(@RequestParam Long userId,
+                                                         Authentication authentication) {
+        User currentUser = (User) authentication.getPrincipal();
+        return paymentService.getPaymentInfo(userId, currentUser);
     }
 
     @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
@@ -45,15 +48,17 @@ public class PaymentController {
     @GetMapping("/success/")
     @Operation(summary = "Handles successful payment",
             description = "Handles successful payment processing through Stripe redirection.")
-    public String getSuccessPayment(@RequestParam("session_id") String sessionId) {
-        return null;
+    public PaymentWithoutSessionDto getSuccessPayment(
+            @RequestParam String sessionId
+    ) {
+        return paymentService.handleSuccessPayment(sessionId);
     }
 
     @GetMapping("/cancel/")
     @Operation(summary = "Manages payment cancellation", description = "Manages payment "
             + "cancellation and returns payment paused messages during Stripe redirection.")
-    public String getCanceledPayment(@RequestParam("session_id") String sessionId) {
-        return null;
+    public BookingDto getCanceledPayment(@RequestParam String sessionId) {
+        return paymentService.handleCancelledPayment(sessionId);
     }
 }
 
