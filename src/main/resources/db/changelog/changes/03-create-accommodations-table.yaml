@@ -14,6 +14,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: address_id
                   type: bigint
                   constraints:
@@ -33,7 +38,7 @@ databaseChangeLog:
                   type: integer
               - column:
                   name: is_deleted
-                  type: bit
+                  type: boolean
                   defaultValueBoolean: false
                   constraints:
                     nullable: false
