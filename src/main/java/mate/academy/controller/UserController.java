@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/{id}/role")
     @Operation(summary = "Update user roles",
             description = "Enables users to update their roles, "
@@ -36,7 +36,7 @@ public class UserController {
         return userService.update(id, requestDto);
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER') OR hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @GetMapping("/me")
     @Operation(summary = "Get profile information", description = "Retrieves the profile "
             + "information for the currently logged-in user.")
@@ -45,7 +45,7 @@ public class UserController {
         return userService.findById(user.getId());
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER') OR hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @PatchMapping("/me")
     @Operation(summary = "Update user profile", description = "Allows users to update their "
             + "profile information.")
