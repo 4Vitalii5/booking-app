@@ -14,9 +14,9 @@ public interface BookingService {
 
     List<BookingDto> findBookingsByUserId(Long userId, Pageable pageable);
 
-    BookingDto findBookingById(Long id);
+    BookingDto findBookingById(Long id, User currentUser);
 
-    BookingDto updateById(Long id, CreateBookingRequestDto requestDto);
+    BookingDto updateById(User currentUser, Long id, CreateBookingRequestDto requestDto);
 
-    void deleteById(Long id);
+    void deleteById(User currentUser, Long id);
 }

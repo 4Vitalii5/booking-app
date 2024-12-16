@@ -37,8 +37,7 @@ public class AccommodationController {
             @RequestBody @Valid CreateAccommodationRequestDto requestDto) {
         return accommodationService.save(requestDto);
     }
-
-    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
+    
     @GetMapping
     @Operation(summary = "Get all accommodations",
             description = "Provides a list of available accommodations.")

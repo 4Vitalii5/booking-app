@@ -52,12 +52,10 @@ public class StripeService {
                                 .build()
                 )
                 .build();
-        Session session = null;
         try {
-            session = Session.create(params);
+            return Session.create(params);
         } catch (StripeException e) {
             throw new RuntimeException("Cannot create session", e);
         }
-        return session;
     }
 }
