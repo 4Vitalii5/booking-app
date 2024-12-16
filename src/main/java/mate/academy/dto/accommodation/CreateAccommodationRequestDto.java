@@ -21,7 +21,7 @@ public record CreateAccommodationRequestDto(
         @NotEmpty
         List<String> amenities,
         @NotNull
-        @Min(0)
+        @Min(1)
         BigDecimal dailyRate,
         @NotNull
         @Min(0)
