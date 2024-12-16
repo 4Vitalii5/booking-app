@@ -3,6 +3,7 @@ package mate.academy.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.dto.booking.BookingDto;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
     private final PaymentService paymentService;
 
+    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @GetMapping
     @Operation(summary = "Get users payment information",
             description = "Retrieves payment information for users.")
@@ -45,19 +47,19 @@ public class PaymentController {
         return paymentService.createPayment(requestDto);
     }
 
+    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @GetMapping("/success/")
     @Operation(summary = "Handles successful payment",
             description = "Handles successful payment processing through Stripe redirection.")
-    public PaymentWithoutSessionDto getSuccessPayment(
-            @RequestParam String sessionId
-    ) {
+    public PaymentWithoutSessionDto getSuccessPayment(@NotBlank String sessionId) {
         return paymentService.handleSuccessPayment(sessionId);
     }
 
+    @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @GetMapping("/cancel/")
     @Operation(summary = "Manages payment cancellation", description = "Manages payment "
             + "cancellation and returns payment paused messages during Stripe redirection.")
-    public BookingDto getCanceledPayment(@RequestParam String sessionId) {
+    public BookingDto getCanceledPayment(@NotBlank String sessionId) {
         return paymentService.handleCancelledPayment(sessionId);
     }
 }
