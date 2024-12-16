@@ -55,6 +55,8 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentWithoutSessionDto handleSuccessPayment(String sessionId) {
         Payment payment = getPayment(sessionId);
         payment.setStatus(Payment.PaymentStatus.PAID);
+        payment.getBooking().setStatus(Booking.BookingStatus.CONFIRMED);
+        paymentRepository.save(payment);
         return paymentMapper.toDtoWithoutSession(payment);
     }
 
