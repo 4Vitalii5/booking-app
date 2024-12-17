@@ -1,5 +1,6 @@
 package mate.academy.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.dto.booking.BookingDto;
@@ -8,44 +9,47 @@ import mate.academy.dto.booking.CreateBookingRequestDto;
 import mate.academy.exception.BookingProcessingException;
 import mate.academy.exception.EntityNotFoundException;
 import mate.academy.mapper.BookingMapper;
+import mate.academy.model.Accommodation;
 import mate.academy.model.Booking;
 import mate.academy.model.Role;
 import mate.academy.model.User;
+import mate.academy.repository.AccommodationRepository;
 import mate.academy.repository.booking.BookingRepository;
 import mate.academy.repository.booking.BookingSpecificationBuilder;
-import mate.academy.service.AccommodationService;
 import mate.academy.service.BookingService;
+import mate.academy.service.NotificationService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
-    public static final int MIN_AVAILABILITY = 1;
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final BookingSpecificationBuilder bookingSpecificationBuilder;
-    private final AccommodationService accommodationService;
+    private final AccommodationRepository accommodationRepository;
+    private final NotificationService notificationService;
 
+    @Transactional
     @Override
     public BookingDto save(CreateBookingRequestDto requestDto, User user) {
-        checkAccommodationDates(requestDto);
-        checkAccommodationAvailability(requestDto);
+        validateAccommodationAvailability(requestDto);
         Booking booking = bookingMapper.toEntity(requestDto);
         booking.setUser(user);
         booking.setStatus(Booking.BookingStatus.PENDING);
         bookingRepository.save(booking);
+        notificationService.sendNotification("New booking created: " + booking.getId());
         return bookingMapper.toDto(booking);
     }
 
     @Override
-    public List<BookingDto> search(BookingSearchParameters searchParameters,
-                                   Pageable pageable) {
+    public List<BookingDto> search(BookingSearchParameters searchParameters, Pageable pageable) {
         Specification<Booking> bookingSpecification = bookingSpecificationBuilder
                 .build(searchParameters);
-        return bookingRepository.findAll(bookingSpecification, pageable)
-                .stream()
+        return bookingRepository.findAll(bookingSpecification, pageable).stream()
                 .map(bookingMapper::toDto)
                 .toList();
     }
@@ -82,6 +86,25 @@ public class BookingServiceImpl implements BookingService {
         }
         booking.setStatus(Booking.BookingStatus.CANCELED);
         bookingRepository.save(booking);
+        notificationService.sendNotification("Booking cancelled: " + booking.getId());
+        notificationService.sendNotification("Accommodation released: "
+                + booking.getAccommodation().getId());
+    }
+
+    @Scheduled(cron = "${cron.expression}")
+    public void checkExpiredBookings() {
+        List<Booking> expiredBookings = bookingRepository.findAllByCheckOutDateBeforeAndStatusNot(
+                LocalDate.now().plusDays(1), Booking.BookingStatus.CANCELED
+        );
+        if (expiredBookings.isEmpty()) {
+            notificationService.sendNotification("No expired bookings today!");
+        } else {
+            for (Booking booking : expiredBookings) {
+                booking.setStatus(Booking.BookingStatus.EXPIRED);
+                bookingRepository.save(booking);
+                notificationService.sendNotification("Booking expired: " + booking.getId());
+            }
+        }
     }
 
     private void ensureBookingAccess(User currentUser, Booking booking) {
@@ -96,28 +119,24 @@ public class BookingServiceImpl implements BookingService {
         );
     }
 
-    private void checkAccommodationDates(CreateBookingRequestDto requestDto) {
-        if (bookingRepository.existsByCheckInDateAndCheckOutDateAndAccommodationId(
-                requestDto.checkInDate(), requestDto.checkOutDate(), requestDto.accommodationId()
-        )) {
-            throw new BookingProcessingException(
-                    "Accommodation with id: " + requestDto.accommodationId()
-                            + " already booked for these dates: " + requestDto.checkInDate()
-                            + "-" + requestDto.checkOutDate()
-            );
-        }
-    }
-
-    private void checkAccommodationAvailability(CreateBookingRequestDto requestDto) {
-        if (accommodationService.findById(requestDto.accommodationId()).availability()
-                < MIN_AVAILABILITY) {
-            throw new BookingProcessingException("Accommodation with id "
-                    + requestDto.accommodationId() + " is not available now.");
-        }
-    }
-
     private boolean isNotManager(User currentUser) {
         return currentUser.getRoles().stream()
                 .anyMatch(role -> role.getRole().equals(Role.RoleName.ROLE_CUSTOMER));
+    }
+
+    private void validateAccommodationAvailability(CreateBookingRequestDto requestDto) {
+        int overlappingBookings = bookingRepository.countOverlappingBookings(
+                requestDto.accommodationId(),
+                requestDto.checkInDate(),
+                requestDto.checkOutDate()
+        );
+
+        Accommodation accommodation = accommodationRepository.findById(requestDto.accommodationId())
+                .orElseThrow(() -> new EntityNotFoundException("Accommodation not found"));
+
+        if (overlappingBookings >= accommodation.getAvailability()) {
+            throw new BookingProcessingException("Accommodation is not available for the selected "
+                    + "dates.");
+        }
     }
 }
