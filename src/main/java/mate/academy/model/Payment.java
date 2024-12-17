@@ -1,5 +1,6 @@
 package mate.academy.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,7 +32,7 @@ public class Payment {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
     @Column(nullable = false, unique = true)
@@ -44,6 +45,6 @@ public class Payment {
     private boolean isDeleted = false;
 
     public enum PaymentStatus {
-        PENDING, PAID
+        PENDING, PAID, EXPIRED
     }
 }
