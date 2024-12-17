@@ -12,8 +12,10 @@ import mate.academy.model.Accommodation;
 import mate.academy.repository.AccommodationRepository;
 import mate.academy.repository.AddressRepository;
 import mate.academy.service.AccommodationService;
+import mate.academy.service.NotificationService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +23,15 @@ public class AccommodationServiceImpl implements AccommodationService {
     private final AccommodationRepository accommodationRepository;
     private final AccommodationMapper accommodationMapper;
     private final AddressRepository addressRepository;
+    private final NotificationService notificationService;
 
+    @Transactional
     @Override
     public AccommodationDto save(CreateAccommodationRequestDto requestDto) {
         checkAddressAvailability(requestDto.addressDto());
         Accommodation accommodation = accommodationMapper.toEntity(requestDto);
         accommodationRepository.save(accommodation);
+        notificationService.sendNotification("New accommodation created: " + accommodation.getId());
         return accommodationMapper.toDto(accommodation);
     }
 
@@ -43,6 +48,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodationMapper.toDto(accommodation);
     }
 
+    @Transactional
     @Override
     public AccommodationDto updateById(Long id, CreateAccommodationRequestDto requestDto) {
         Accommodation accommodation = getAccommodationById(id);
