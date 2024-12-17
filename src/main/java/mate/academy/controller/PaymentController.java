@@ -63,13 +63,3 @@ public class PaymentController {
         return paymentService.handleCancelledPayment(sessionId);
     }
 }
-
-
-//Payment Controller (Stripe): Facilitates payments for bookings through the platform.
-//Interacts with Stripe API. Use stripe-java library.
-//
-//GET: /payments/?user_id=... - Retrieves payment information for users.
-//POST: /payments/ - Initiates payment sessions for booking transactions.
-//GET: /payments/success/ - Handles successful payment processing through Stripe redirection.
-//GET: /payments/cancel/ - Manages payment cancellation and returns payment
-//paused messages during Stripe redirection.
