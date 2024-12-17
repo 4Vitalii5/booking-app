@@ -56,7 +56,3 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: id
             constraintName: fk_bookings_user
-#        - addUniqueConstraint:
-#            columnNames: check_in_date, check_out_date, accommodation_id
-#            tableName: bookings
-#            constraintName: uc_bookings_check_dates_accommodation
