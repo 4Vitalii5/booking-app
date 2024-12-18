@@ -18,5 +18,5 @@ public interface BookingService {
 
     BookingDto updateById(User currentUser, Long id, CreateBookingRequestDto requestDto);
 
-    void deleteById(User currentUser, Long id);
+    BookingDto deleteById(User currentUser, Long id);
 }

@@ -23,9 +23,6 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLDelete(sql = "UPDATE bookings SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted=false")
 @Table(name = "bookings")
-//        , uniqueConstraints = {@UniqueConstraint(
-//        columnNames = {"checkInDate", "checkOutDate", "accommodation_id"})
-//})
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

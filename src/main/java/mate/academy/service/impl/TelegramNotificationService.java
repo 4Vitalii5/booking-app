@@ -1,5 +1,6 @@
 package mate.academy.service.impl;
 
+import jakarta.annotation.PostConstruct;
 import mate.academy.service.NotificationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,12 +12,20 @@ public class TelegramNotificationService implements NotificationService {
     private String botToken;
     @Value("${telegram.chat.id}")
     private String chatId;
-    private final WebClient webClient = WebClient.create("https://api.telegram.org/bot" + botToken);
+    private WebClient webClient;
+
+    @PostConstruct
+    private void init() {
+        this.webClient = WebClient.create("https://api.telegram.org/bot" + botToken);
+    }
 
     @Override
     public void sendNotification(String message) {
         webClient.post()
-                .uri("sendMessage?chat_id=" + chatId + "&text=" + message)
+                .uri(uriBuilder -> uriBuilder.path("/sendMessage")
+                        .queryParam("chat_id", chatId)
+                        .queryParam("text", message)
+                        .build())
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();

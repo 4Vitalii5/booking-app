@@ -18,6 +18,28 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    @ExceptionHandler(PaymentProcessingException.class)
+    protected ResponseEntity<Object> handlePaymentProcessingException(
+            PaymentProcessingException exception, WebRequest request) {
+        Map<String, Object> body = getBody(
+                exception.getMessage(),
+                request.getDescription(false),
+                HttpStatus.NOT_FOUND
+        );
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(StripeProcessingException.class)
+    protected ResponseEntity<Object> handleStripeProcessingException(
+            StripeProcessingException exception, WebRequest request) {
+        Map<String, Object> body = getBody(
+                exception.getMessage(),
+                request.getDescription(false),
+                HttpStatus.NOT_FOUND
+        );
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(BookingProcessingException.class)
     protected ResponseEntity<Object> handleBookingProcessingException(
             BookingProcessingException exception, WebRequest request) {

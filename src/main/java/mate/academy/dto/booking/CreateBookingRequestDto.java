@@ -1,6 +1,7 @@
 package mate.academy.dto.booking;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 import mate.academy.validation.FieldsDatesValid;
 import mate.academy.validation.FutureOrPresent;
@@ -16,7 +17,8 @@ public record CreateBookingRequestDto(
         @FutureOrPresent
         LocalDate checkInDate,
         LocalDate checkOutDate,
-        @Min(1)
+        @NotNull
+        @Positive
         Long accommodationId
 ) {
 }

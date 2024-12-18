@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.springframework.beans.BeanWrapperImpl;
 
 public class FieldsDatesValidator implements ConstraintValidator<FieldsDatesValid, Object> {
+    public static final int MIN_DAYS_QUANTITY = 1;
     private String field;
     private String fieldMatch;
 
@@ -23,7 +24,7 @@ public class FieldsDatesValidator implements ConstraintValidator<FieldsDatesVali
         if (fieldValue == null || fieldMatchValue == null) {
             return false;
         }
-        return fieldValue.plusDays(1).isEqual(fieldMatchValue)
+        return fieldValue.plusDays(MIN_DAYS_QUANTITY).isEqual(fieldMatchValue)
                 || fieldValue.isBefore(fieldMatchValue);
     }
 }

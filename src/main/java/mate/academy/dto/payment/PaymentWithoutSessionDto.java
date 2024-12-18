@@ -6,6 +6,6 @@ import mate.academy.model.Payment;
 public record PaymentWithoutSessionDto(
         Long bookingId,
         Payment.PaymentStatus status,
-        BigDecimal amountToPay
+        BigDecimal amountPaid
 ) {
 }

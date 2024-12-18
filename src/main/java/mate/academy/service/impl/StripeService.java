@@ -4,19 +4,34 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+import com.stripe.param.checkout.SessionListParams;
 import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
-import mate.academy.dto.payment.CreatePaymentRequestDto;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import mate.academy.dto.stripe.DescriptionForStripeDto;
+import mate.academy.exception.PaymentProcessingException;
+import mate.academy.exception.StripeProcessingException;
+import mate.academy.model.Booking;
+import mate.academy.model.Payment;
+import mate.academy.repository.PaymentRepository;
+import mate.academy.repository.booking.BookingRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class StripeService {
-    public static final String SUCCESS_URL = "http://localhost:8080/api/payments/success/";
-    public static final String CANCEL_URL = "http://localhost:8080/api/payments/cancel/";
+    public static final String SUCCESS_URL = "http://localhost:8080/api/payments/success/"
+            + "?sessionId={CHECKOUT_SESSION_ID}";
+    public static final String CANCEL_URL = "http://localhost:8080/api/payments/cancel/"
+            + "?sessionId={CHECKOUT_SESSION_ID}";
     public static final long DEFAULT_QUANTITY = 1L;
     public static final String DEFAULT_CURRENCY = "usd";
     public static final BigDecimal CENTS_AMOUNT = BigDecimal.valueOf(100);
+    private final PaymentRepository paymentRepository;
+    private final BookingRepository bookingRepository;
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
@@ -25,7 +40,7 @@ public class StripeService {
         Stripe.apiKey = stripeSecretKey;
     }
 
-    public Session createStripeSession(CreatePaymentRequestDto requestDto) {
+    public Session createStripeSession(DescriptionForStripeDto stripeDto) {
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(SUCCESS_URL)
@@ -37,14 +52,15 @@ public class StripeService {
                                         .builder()
                                         .setCurrency(DEFAULT_CURRENCY)
                                         .setUnitAmountDecimal(
-                                                requestDto.amount().multiply(CENTS_AMOUNT)
+                                                stripeDto.total().multiply(CENTS_AMOUNT)
                                         )
                                         .setProductData(
                                                 SessionCreateParams.LineItem.PriceData.ProductData
                                                         .builder()
                                                         .setName(
                                                                 "Booking #"
-                                                                        + requestDto.bookingId())
+                                                                        + stripeDto.bookingId())
+                                                        .setDescription(stripeDto.description())
                                                         .build()
                                         )
                                         .build()
@@ -55,7 +71,57 @@ public class StripeService {
         try {
             return Session.create(params);
         } catch (StripeException e) {
-            throw new RuntimeException("Cannot create session", e);
+            throw new StripeProcessingException("Cannot create session", e);
         }
+    }
+
+    public Session renewSession(Payment payment) {
+        if (payment.getStatus() == Payment.PaymentStatus.EXPIRED) {
+            DescriptionForStripeDto stripeDto = new DescriptionForStripeDto(
+                    payment.getBooking().getId(),
+                    payment.getAmountToPay(),
+                    "Renewal for booking #" + payment.getBooking().getId());
+            return createStripeSession(stripeDto);
+        } else {
+            throw new StripeProcessingException("Cannot renew session for payment with id:"
+                    + payment.getId()
+                    + ". Which has not expired.");
+        }
+    }
+
+    @Scheduled(cron = "0 * * * * ?")
+    public void checkExpiredSession() {
+        SessionListParams params = SessionListParams.builder().setLimit(100L).build();
+        try {
+            List<Session> expiredSessions = getExpiredSessions(params);
+            if (!expiredSessions.isEmpty()) {
+                handleExpiredSessions(expiredSessions);
+            }
+        } catch (StripeException e) {
+            throw new StripeProcessingException("Can't check expired Stripe sessions.", e);
+        }
+    }
+
+    private void handleExpiredSessions(List<Session> expiredSessions) {
+        expiredSessions.forEach(session -> {
+            Booking booking = getBookingBySessionId(session.getId());
+            if (!Booking.BookingStatus.EXPIRED.equals(booking.getStatus())) {
+                booking.setStatus(Booking.BookingStatus.EXPIRED);
+                bookingRepository.save(booking);
+            }
+        });
+    }
+
+    private List<Session> getExpiredSessions(SessionListParams params) throws StripeException {
+        return Session.list(params).getData().stream()
+                .filter(session -> session.getStatus().equals("expired"))
+                .filter(session -> paymentRepository.existsBySessionId(session.getId()))
+                .toList();
+    }
+
+    private Booking getBookingBySessionId(String sessionId) {
+        return paymentRepository.findBookingBySessionId(sessionId).orElseThrow(() ->
+                new PaymentProcessingException("Can't find booking for payment with sessionId:"
+                        + sessionId));
     }
 }
