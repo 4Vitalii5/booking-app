@@ -9,6 +9,7 @@ import mate.academy.exception.DuplicateResourceException;
 import mate.academy.exception.EntityNotFoundException;
 import mate.academy.mapper.AccommodationMapper;
 import mate.academy.model.Accommodation;
+import mate.academy.model.Address;
 import mate.academy.repository.AccommodationRepository;
 import mate.academy.repository.AddressRepository;
 import mate.academy.service.AccommodationService;
@@ -28,10 +29,11 @@ public class AccommodationServiceImpl implements AccommodationService {
     @Transactional
     @Override
     public AccommodationDto save(CreateAccommodationRequestDto requestDto) {
-        checkAddressAvailability(requestDto.addressDto());
+        checkAndSaveAddress(requestDto.addressDto());
         Accommodation accommodation = accommodationMapper.toEntity(requestDto);
         accommodationRepository.save(accommodation);
-        notificationService.sendNotification("New accommodation created: " + accommodation.getId());
+        notificationService.sendNotification("New booking created with ID:"
+                + accommodation.getId());
         return accommodationMapper.toDto(accommodation);
     }
 
@@ -44,14 +46,14 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     @Override
     public AccommodationDto findById(Long id) {
-        Accommodation accommodation = getAccommodationById(id);
-        return accommodationMapper.toDto(accommodation);
+        return accommodationMapper.toDto(getAccommodationById(id));
     }
 
     @Transactional
     @Override
     public AccommodationDto updateById(Long id, CreateAccommodationRequestDto requestDto) {
         Accommodation accommodation = getAccommodationById(id);
+        checkAddressAvailability(requestDto, accommodation);
         accommodationMapper.updateAccommodationFromDto(requestDto, accommodation);
         accommodationRepository.save(accommodation);
         return accommodationMapper.toDto(accommodation);
@@ -68,7 +70,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         );
     }
 
-    private void checkAddressAvailability(CreateAddressRequestDto requestDto) {
+    private void checkAndSaveAddress(CreateAddressRequestDto requestDto) {
         if (addressRepository.existsByCountryAndCityAndStateAndStreetAndHouseNumber(
                 requestDto.country(), requestDto.city(), requestDto.state(),
                 requestDto.street(), requestDto.houseNumber()
@@ -77,6 +79,30 @@ public class AccommodationServiceImpl implements AccommodationService {
                     String.format("This address %s,%s,%s,%s,%s,%s already exists",
                             requestDto.country(), requestDto.city(), requestDto.state(),
                             requestDto.street(), requestDto.houseNumber(), requestDto.postalCode())
+            );
+        }
+    }
+
+    private Address getAddressByAddressDto(CreateAccommodationRequestDto requestDto) {
+        return addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
+                requestDto.addressDto().country(), requestDto.addressDto().city(),
+                requestDto.addressDto().state(), requestDto.addressDto().street(),
+                requestDto.addressDto().houseNumber()
+        );
+    }
+
+    private void checkAddressAvailability(CreateAccommodationRequestDto requestDto,
+                                          Accommodation accommodation) {
+        Address addressFromDto = getAddressByAddressDto(requestDto);
+        if (!accommodation.getAddress().getId().equals(addressFromDto.getId())) {
+            throw new DuplicateResourceException(
+                    String.format(
+                            "This address %s,%s,%s,%s,%s,%s already belong another accommodation",
+                            requestDto.addressDto().country(), requestDto.addressDto().city(),
+                            requestDto.addressDto().state(), requestDto.addressDto().street(),
+                            requestDto.addressDto().houseNumber(),
+                            requestDto.addressDto().postalCode()
+                    )
             );
         }
     }
