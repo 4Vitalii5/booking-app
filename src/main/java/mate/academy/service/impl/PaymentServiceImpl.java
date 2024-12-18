@@ -13,6 +13,7 @@ import mate.academy.dto.payment.PaymentDto;
 import mate.academy.dto.payment.PaymentWithoutSessionDto;
 import mate.academy.dto.stripe.DescriptionForStripeDto;
 import mate.academy.exception.EntityNotFoundException;
+import mate.academy.exception.PaymentProcessingException;
 import mate.academy.mapper.BookingMapper;
 import mate.academy.mapper.PaymentMapper;
 import mate.academy.model.Booking;
@@ -74,15 +75,40 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(Payment.PaymentStatus.PAID);
         payment.getBooking().setStatus(Booking.BookingStatus.CONFIRMED);
         paymentRepository.save(payment);
+        notificationService.sendNotification("Payment with id:" + payment.getId()
+                + "\n For booking: " + getDescription(payment.getBooking())
+                + " successfully paid.");
         return paymentMapper.toDtoWithoutSession(payment);
     }
 
     @Override
     public BookingDto handleCancelledPayment(String sessionId) {
         Payment payment = getPayment(sessionId);
-        notificationService.sendNotification("Payment #:" + payment.getId() + " can be made later. "
+        notificationService.sendNotification("Payment with id:" + payment.getId()
+                + " can be made later. "
                 + "The session is available for only 24 hours.");
         return bookingMapper.toDto(payment.getBooking());
+    }
+
+    @Override
+    public PaymentDto renewPaymentSession(Long paymentId, User currentUser) {
+        Payment payment = getPaymentByIdAndRole(paymentId, currentUser);
+        Session newSession = stripeService.renewSession(payment);
+        payment.setSessionUrl(getSessionUrl(newSession));
+        payment.setSessionId(newSession.getId());
+        payment.setStatus(Payment.PaymentStatus.PENDING);
+        paymentRepository.save(payment);
+        return paymentMapper.toDto(payment);
+    }
+
+    private Payment getPaymentByIdAndRole(Long paymentId, User currentUser) {
+        return isManager(currentUser)
+                ? paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new PaymentProcessingException("Can't find payment with id:"
+                        + paymentId))
+                : paymentRepository.findByIdAndUserId(paymentId, currentUser.getId())
+                .orElseThrow(() -> new PaymentProcessingException("Can't find payment with id:"
+                        + paymentId));
     }
 
     private URL getSessionUrl(Session session) {
@@ -127,8 +153,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private String getDescription(Booking booking) {
-        return "Booking #" + booking.getId()
-                + " from " + booking.getCheckInDate()
+        return "from " + booking.getCheckInDate()
                 + " to " + booking.getCheckOutDate()
                 + " type " + booking.getAccommodation().getType();
     }
