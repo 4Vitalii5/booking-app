@@ -9,10 +9,14 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE addresses SET is_deleted = true WHERE id=?")
+@SQLRestriction("is_deleted=false")
 @Table(name = "addresses", uniqueConstraints = {@UniqueConstraint(
         columnNames = {"country", "city", "state", "street", "house_number", "postal_code"})
 })
@@ -32,4 +36,6 @@ public class Address {
     private String houseNumber;
     @Column(nullable = false)
     private String postalCode;
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 }
