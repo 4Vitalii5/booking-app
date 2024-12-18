@@ -15,4 +15,6 @@ public interface PaymentService {
     PaymentWithoutSessionDto handleSuccessPayment(String sessionId);
 
     BookingDto handleCancelledPayment(String sessionId);
+
+    PaymentDto renewPaymentSession(Long paymentId, User currentUser);
 }
