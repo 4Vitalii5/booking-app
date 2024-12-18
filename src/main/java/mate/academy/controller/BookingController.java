@@ -11,7 +11,6 @@ import mate.academy.dto.booking.CreateBookingRequestDto;
 import mate.academy.model.User;
 import mate.academy.service.BookingService;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Booking management", description = "Managing users bookings")
@@ -79,12 +77,11 @@ public class BookingController {
     }
 
     @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete booking by ID",
+    @Operation(summary = "Cancel booking by ID",
             description = "Enables the cancellation of bookings.")
-    public void deleteBooking(Authentication authentication, @PathVariable Long id) {
+    public BookingDto cancelBooking(Authentication authentication, @PathVariable Long id) {
         User user = (User) authentication.getPrincipal();
-        bookingService.deleteById(user, id);
+        return bookingService.deleteById(user, id);
     }
 }
