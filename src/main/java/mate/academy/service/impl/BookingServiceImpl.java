@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import mate.academy.dto.booking.BookingDto;
 import mate.academy.dto.booking.BookingSearchParameters;
 import mate.academy.dto.booking.CreateBookingRequestDto;
+import mate.academy.exception.BookingForbiddenException;
 import mate.academy.exception.BookingProcessingException;
 import mate.academy.exception.EntityNotFoundException;
 import mate.academy.mapper.BookingMapper;
@@ -14,6 +15,7 @@ import mate.academy.model.Booking;
 import mate.academy.model.Role;
 import mate.academy.model.User;
 import mate.academy.repository.AccommodationRepository;
+import mate.academy.repository.PaymentRepository;
 import mate.academy.repository.booking.BookingRepository;
 import mate.academy.repository.booking.BookingSpecificationBuilder;
 import mate.academy.service.BookingService;
@@ -27,21 +29,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
+    public static final int DAYS_TO_ADD = 1;
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final BookingSpecificationBuilder bookingSpecificationBuilder;
     private final AccommodationRepository accommodationRepository;
     private final NotificationService notificationService;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     @Override
     public BookingDto save(CreateBookingRequestDto requestDto, User user) {
         validateAccommodationAvailability(requestDto);
+        if (paymentRepository.existsPendingPaymentsByUserId(user.getId())) {
+            throw new BookingForbiddenException("User with id:" + user.getId()
+                    + " has pending payments and cannot create "
+                    + "new booking.");
+        }
         Booking booking = bookingMapper.toEntity(requestDto);
         booking.setUser(user);
         booking.setStatus(Booking.BookingStatus.PENDING);
         bookingRepository.save(booking);
-        notificationService.sendNotification("New booking created: " + booking.getId());
+        notificationService.sendNotification("New booking created with ID:" + booking.getId());
         return bookingMapper.toDto(booking);
     }
 
@@ -71,13 +80,17 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto updateById(User currentUser, Long id, CreateBookingRequestDto requestDto) {
         Booking booking = getBookingById(id);
+        if (!accommodationRepository.existsById(requestDto.accommodationId())) {
+            throw new BookingProcessingException("Can't find accommodation with id:"
+                    + requestDto.accommodationId());
+        }
         ensureBookingAccess(currentUser, booking);
         bookingMapper.updateBookingFromDto(requestDto, booking);
         return bookingMapper.toDto(booking);
     }
 
     @Override
-    public void deleteById(User currentUser, Long id) {
+    public BookingDto deleteById(User currentUser, Long id) {
         Booking booking = getBookingById(id);
         ensureBookingAccess(currentUser, booking);
         if (booking.getStatus() == Booking.BookingStatus.CANCELED) {
@@ -86,15 +99,17 @@ public class BookingServiceImpl implements BookingService {
         }
         booking.setStatus(Booking.BookingStatus.CANCELED);
         bookingRepository.save(booking);
-        notificationService.sendNotification("Booking cancelled: " + booking.getId());
-        notificationService.sendNotification("Accommodation released: "
-                + booking.getAccommodation().getId());
+        notificationService.sendNotification("Booking with ID:" + booking.getId()
+                + " has been cancelled");
+        notificationService.sendNotification("Accommodation with ID:"
+                + booking.getAccommodation().getId() + " has released.");
+        return bookingMapper.toDto(booking);
     }
 
     @Scheduled(cron = "${cron.expression}")
     public void checkExpiredBookings() {
         List<Booking> expiredBookings = bookingRepository.findAllByCheckOutDateBeforeAndStatusNot(
-                LocalDate.now().plusDays(1), Booking.BookingStatus.CANCELED
+                LocalDate.now().plusDays(DAYS_TO_ADD), Booking.BookingStatus.CANCELED
         );
         if (expiredBookings.isEmpty()) {
             notificationService.sendNotification("No expired bookings today!");
@@ -102,7 +117,8 @@ public class BookingServiceImpl implements BookingService {
             for (Booking booking : expiredBookings) {
                 booking.setStatus(Booking.BookingStatus.EXPIRED);
                 bookingRepository.save(booking);
-                notificationService.sendNotification("Booking expired: " + booking.getId());
+                notificationService.sendNotification("Booking with ID:" + booking.getId()
+                        + "has expired.");
             }
         }
     }
@@ -132,7 +148,8 @@ public class BookingServiceImpl implements BookingService {
         );
 
         Accommodation accommodation = accommodationRepository.findById(requestDto.accommodationId())
-                .orElseThrow(() -> new EntityNotFoundException("Accommodation not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Can't find accommodation with id:"
+                        + requestDto.accommodationId()));
 
         if (overlappingBookings >= accommodation.getAvailability()) {
             throw new BookingProcessingException("Accommodation is not available for the selected "
