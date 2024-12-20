@@ -1,20 +1,21 @@
-package mate.academy.service.impl;
+package org.cyberrealm.tech.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.accommodation.AccommodationDto;
-import mate.academy.dto.accommodation.CreateAccommodationRequestDto;
-import mate.academy.dto.address.CreateAddressRequestDto;
-import mate.academy.exception.DuplicateResourceException;
-import mate.academy.exception.EntityNotFoundException;
-import mate.academy.mapper.AccommodationMapper;
-import mate.academy.model.Accommodation;
-import mate.academy.model.Address;
-import mate.academy.repository.AccommodationRepository;
-import mate.academy.repository.AddressRepository;
-import mate.academy.service.AccommodationService;
-import mate.academy.service.NotificationService;
+import org.cyberrealm.tech.dto.accommodation.AccommodationDto;
+import org.cyberrealm.tech.dto.accommodation.CreateAccommodationRequestDto;
+import org.cyberrealm.tech.dto.address.CreateAddressRequestDto;
+import org.cyberrealm.tech.exception.DuplicateResourceException;
+import org.cyberrealm.tech.exception.EntityNotFoundException;
+import org.cyberrealm.tech.mapper.AccommodationMapper;
+import org.cyberrealm.tech.model.Accommodation;
+import org.cyberrealm.tech.model.Address;
+import org.cyberrealm.tech.repository.AccommodationRepository;
+import org.cyberrealm.tech.repository.AddressRepository;
+import org.cyberrealm.tech.service.AccommodationService;
+import org.cyberrealm.tech.service.NotificationService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +33,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         checkAndSaveAddress(requestDto.addressDto());
         Accommodation accommodation = accommodationMapper.toEntity(requestDto);
         accommodationRepository.save(accommodation);
-        notificationService.sendNotification("New booking created with ID:"
-                + accommodation.getId());
+        sendNotification("New booking created with ID:" + accommodation.getId());
         return accommodationMapper.toDto(accommodation);
     }
 
@@ -64,6 +64,13 @@ public class AccommodationServiceImpl implements AccommodationService {
         accommodationRepository.deleteById(id);
     }
 
+    @Async
+    public void sendNotification(String message) {
+        if (notificationService != null) {
+            notificationService.sendNotification(message);
+        }
+    }
+
     private Accommodation getAccommodationById(Long id) {
         return accommodationRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Can't find accommodation by id: " + id)
@@ -83,17 +90,22 @@ public class AccommodationServiceImpl implements AccommodationService {
         }
     }
 
-    private Address getAddressByAddressDto(CreateAccommodationRequestDto requestDto) {
+    private Address getAddressByAddressDto(CreateAddressRequestDto requestDto) {
         return addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
-                requestDto.addressDto().country(), requestDto.addressDto().city(),
-                requestDto.addressDto().state(), requestDto.addressDto().street(),
-                requestDto.addressDto().houseNumber()
-        );
+                requestDto.country(), requestDto.city(), requestDto.state(), requestDto.street(),
+                requestDto.houseNumber()
+        ).orElseThrow(() ->
+                new EntityNotFoundException(
+                        String.format("Can't find address %s,%s,%s,%s,%s,%s.",
+                                requestDto.country(), requestDto.city(), requestDto.state(),
+                                requestDto.street(), requestDto.houseNumber(),
+                                requestDto.postalCode())
+                ));
     }
 
     private void checkAddressAvailability(CreateAccommodationRequestDto requestDto,
                                           Accommodation accommodation) {
-        Address addressFromDto = getAddressByAddressDto(requestDto);
+        Address addressFromDto = getAddressByAddressDto(requestDto.addressDto());
         if (!accommodation.getAddress().getId().equals(addressFromDto.getId())) {
             throw new DuplicateResourceException(
                     String.format(
