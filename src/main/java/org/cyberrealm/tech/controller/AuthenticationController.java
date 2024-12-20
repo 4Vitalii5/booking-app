@@ -1,19 +1,21 @@
-package mate.academy.controller;
+package org.cyberrealm.tech.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.user.UserLoginRequestDto;
-import mate.academy.dto.user.UserLoginResponseDto;
-import mate.academy.dto.user.UserRegistrationRequestDto;
-import mate.academy.dto.user.UserResponseDto;
-import mate.academy.exception.RegistrationException;
-import mate.academy.security.AuthenticationService;
-import mate.academy.service.UserService;
+import org.cyberrealm.tech.dto.user.UserLoginRequestDto;
+import org.cyberrealm.tech.dto.user.UserLoginResponseDto;
+import org.cyberrealm.tech.dto.user.UserRegistrationRequestDto;
+import org.cyberrealm.tech.dto.user.UserResponseDto;
+import org.cyberrealm.tech.exception.RegistrationException;
+import org.cyberrealm.tech.security.AuthenticationService;
+import org.cyberrealm.tech.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Authentication management",
@@ -26,6 +28,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register a new user",
             description = "Register a new user by providing their details such as username, "
                     + "password, and email. ")
