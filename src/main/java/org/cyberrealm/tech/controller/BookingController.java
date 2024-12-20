@@ -1,16 +1,17 @@
-package mate.academy.controller;
+package org.cyberrealm.tech.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.booking.BookingDto;
-import mate.academy.dto.booking.BookingSearchParameters;
-import mate.academy.dto.booking.CreateBookingRequestDto;
-import mate.academy.model.User;
-import mate.academy.service.BookingService;
+import org.cyberrealm.tech.dto.booking.BookingDto;
+import org.cyberrealm.tech.dto.booking.BookingSearchParameters;
+import org.cyberrealm.tech.dto.booking.CreateBookingRequestDto;
+import org.cyberrealm.tech.model.User;
+import org.cyberrealm.tech.service.BookingService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Booking management", description = "Managing users bookings")
@@ -31,6 +33,7 @@ public class BookingController {
 
     @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new accommodation booking",
             description = "Permits the creation of new accommodation bookings.")
     public BookingDto createBooking(@RequestBody @Valid CreateBookingRequestDto requestDto,
@@ -78,6 +81,7 @@ public class BookingController {
 
     @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Cancel booking by ID",
             description = "Enables the cancellation of bookings.")
     public BookingDto cancelBooking(Authentication authentication, @PathVariable Long id) {
