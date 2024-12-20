@@ -1,16 +1,17 @@
-package mate.academy.controller;
+package org.cyberrealm.tech.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.booking.BookingDto;
-import mate.academy.dto.payment.CreatePaymentRequestDto;
-import mate.academy.dto.payment.PaymentDto;
-import mate.academy.dto.payment.PaymentWithoutSessionDto;
-import mate.academy.model.User;
-import mate.academy.service.PaymentService;
+import org.cyberrealm.tech.dto.booking.BookingDto;
+import org.cyberrealm.tech.dto.payment.CreatePaymentRequestDto;
+import org.cyberrealm.tech.dto.payment.PaymentDto;
+import org.cyberrealm.tech.dto.payment.PaymentWithoutSessionDto;
+import org.cyberrealm.tech.model.User;
+import org.cyberrealm.tech.service.PaymentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Payment management",
@@ -41,6 +43,7 @@ public class PaymentController {
 
     @PreAuthorize("hasRole('MANAGER') OR hasRole('CUSTOMER')")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Initiates payment sessions",
             description = "Initiates payment sessions for booking transactions.")
     public PaymentDto createPayment(@RequestBody @Valid CreatePaymentRequestDto requestDto) {
