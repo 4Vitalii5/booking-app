@@ -1,4 +1,4 @@
-package mate.academy.service.impl;
+package org.cyberrealm.tech.service.impl;
 
 import com.stripe.model.checkout.Session;
 import java.math.BigDecimal;
@@ -7,23 +7,24 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.booking.BookingDto;
-import mate.academy.dto.payment.CreatePaymentRequestDto;
-import mate.academy.dto.payment.PaymentDto;
-import mate.academy.dto.payment.PaymentWithoutSessionDto;
-import mate.academy.dto.stripe.DescriptionForStripeDto;
-import mate.academy.exception.EntityNotFoundException;
-import mate.academy.exception.PaymentProcessingException;
-import mate.academy.mapper.BookingMapper;
-import mate.academy.mapper.PaymentMapper;
-import mate.academy.model.Booking;
-import mate.academy.model.Payment;
-import mate.academy.model.Role;
-import mate.academy.model.User;
-import mate.academy.repository.PaymentRepository;
-import mate.academy.repository.booking.BookingRepository;
-import mate.academy.service.NotificationService;
-import mate.academy.service.PaymentService;
+import org.cyberrealm.tech.dto.booking.BookingDto;
+import org.cyberrealm.tech.dto.payment.CreatePaymentRequestDto;
+import org.cyberrealm.tech.dto.payment.PaymentDto;
+import org.cyberrealm.tech.dto.payment.PaymentWithoutSessionDto;
+import org.cyberrealm.tech.dto.stripe.DescriptionForStripeDto;
+import org.cyberrealm.tech.exception.EntityNotFoundException;
+import org.cyberrealm.tech.exception.PaymentProcessingException;
+import org.cyberrealm.tech.mapper.BookingMapper;
+import org.cyberrealm.tech.mapper.PaymentMapper;
+import org.cyberrealm.tech.model.Booking;
+import org.cyberrealm.tech.model.Payment;
+import org.cyberrealm.tech.model.Role;
+import org.cyberrealm.tech.model.User;
+import org.cyberrealm.tech.repository.PaymentRepository;
+import org.cyberrealm.tech.repository.booking.BookingRepository;
+import org.cyberrealm.tech.service.NotificationService;
+import org.cyberrealm.tech.service.PaymentService;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,8 +76,8 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(Payment.PaymentStatus.PAID);
         payment.getBooking().setStatus(Booking.BookingStatus.CONFIRMED);
         paymentRepository.save(payment);
-        notificationService.sendNotification("Payment with id:" + payment.getId()
-                + "\n For booking: " + getDescription(payment.getBooking())
+        sendNotification("Payment with id:" + payment.getId() + "\n"
+                + "For booking: " + getDescription(payment.getBooking())
                 + " successfully paid.");
         return paymentMapper.toDtoWithoutSession(payment);
     }
@@ -84,8 +85,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public BookingDto handleCancelledPayment(String sessionId) {
         Payment payment = getPayment(sessionId);
-        notificationService.sendNotification("Payment with id:" + payment.getId()
-                + " can be made later. "
+        sendNotification("Payment with id:" + payment.getId() + " can be made later. "
                 + "The session is available for only 24 hours.");
         return bookingMapper.toDto(payment.getBooking());
     }
@@ -99,6 +99,13 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(Payment.PaymentStatus.PENDING);
         paymentRepository.save(payment);
         return paymentMapper.toDto(payment);
+    }
+
+    @Async
+    public void sendNotification(String message) {
+        if (notificationService != null) {
+            notificationService.sendNotification(message);
+        }
     }
 
     private Payment getPaymentByIdAndRole(Long paymentId, User currentUser) {
