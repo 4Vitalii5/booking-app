@@ -1,8 +1,8 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changes/01-create-addresses-table.yaml
-  - include:
-      file: db/changelog/changes/02-insert-addresses.yaml
+#  - include:
+#      file: db/changelog/changes/02-insert-addresses.yaml
   - include:
       file: db/changelog/changes/03-create-accommodations-table.yaml
   - include:
@@ -19,10 +19,10 @@ databaseChangeLog:
       file: db/changelog/changes/09-insert-roles.yaml
   - include:
       file: db/changelog/changes/10-update-users-roles.yaml
-  - include:
-      file: db/changelog/changes/11-insert-accommodation.yaml
-  - include:
-      file: db/changelog/changes/12-insert-accommodations_amenities.yaml
+#  - include:
+#      file: db/changelog/changes/11-insert-accommodation.yaml
+#  - include:
+#      file: db/changelog/changes/12-insert-accommodations_amenities.yaml
   - include:
       file: db/changelog/changes/13-create-bookings-table.yaml
   - include:
