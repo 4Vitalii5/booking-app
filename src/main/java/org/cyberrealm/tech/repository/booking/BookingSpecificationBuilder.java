@@ -1,17 +1,18 @@
-package mate.academy.repository.booking;
+package org.cyberrealm.tech.repository.booking;
+
+import static org.cyberrealm.tech.repository.booking.specification.StatusSpecificationProvider.STATUS_FIELD;
+import static org.cyberrealm.tech.repository.booking.specification.UserIdSpecificationProvider.USER_ID_FIELD;
 
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.booking.BookingSearchParameters;
-import mate.academy.model.Booking;
-import mate.academy.repository.SpecificationProviderManager;
+import org.cyberrealm.tech.dto.booking.BookingSearchParameters;
+import org.cyberrealm.tech.model.Booking;
+import org.cyberrealm.tech.repository.SpecificationProviderManager;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class BookingSpecificationBuilder implements SpecificationBuilder<Booking> {
-    private static final String STATUS_FIELD = "status";
-    private static final String USER_ID_FIELD = "userId";
     private final SpecificationProviderManager<Booking> specificationProviderManager;
 
     @Override
