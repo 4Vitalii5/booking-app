@@ -1,14 +1,14 @@
-package mate.academy.dto.accommodation;
+package org.cyberrealm.tech.dto.accommodation;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
-import mate.academy.dto.address.CreateAddressRequestDto;
-import mate.academy.model.Accommodation;
-import mate.academy.validation.ValidEnum;
+import org.cyberrealm.tech.dto.address.CreateAddressRequestDto;
+import org.cyberrealm.tech.model.Accommodation;
+import org.cyberrealm.tech.validation.ValidEnum;
 
 public record CreateAccommodationRequestDto(
         @NotBlank
@@ -21,10 +21,10 @@ public record CreateAccommodationRequestDto(
         @NotEmpty
         List<String> amenities,
         @NotNull
-        @Min(1)
+        @Positive
         BigDecimal dailyRate,
         @NotNull
-        @Min(0)
+        @Positive
         Integer availability
 ) {
 }
