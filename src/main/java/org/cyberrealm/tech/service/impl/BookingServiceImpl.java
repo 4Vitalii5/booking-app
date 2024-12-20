@@ -1,27 +1,28 @@
-package mate.academy.service.impl;
+package org.cyberrealm.tech.service.impl;
 
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.booking.BookingDto;
-import mate.academy.dto.booking.BookingSearchParameters;
-import mate.academy.dto.booking.CreateBookingRequestDto;
-import mate.academy.exception.BookingForbiddenException;
-import mate.academy.exception.BookingProcessingException;
-import mate.academy.exception.EntityNotFoundException;
-import mate.academy.mapper.BookingMapper;
-import mate.academy.model.Accommodation;
-import mate.academy.model.Booking;
-import mate.academy.model.Role;
-import mate.academy.model.User;
-import mate.academy.repository.AccommodationRepository;
-import mate.academy.repository.PaymentRepository;
-import mate.academy.repository.booking.BookingRepository;
-import mate.academy.repository.booking.BookingSpecificationBuilder;
-import mate.academy.service.BookingService;
-import mate.academy.service.NotificationService;
+import org.cyberrealm.tech.dto.booking.BookingDto;
+import org.cyberrealm.tech.dto.booking.BookingSearchParameters;
+import org.cyberrealm.tech.dto.booking.CreateBookingRequestDto;
+import org.cyberrealm.tech.exception.BookingForbiddenException;
+import org.cyberrealm.tech.exception.BookingProcessingException;
+import org.cyberrealm.tech.exception.EntityNotFoundException;
+import org.cyberrealm.tech.mapper.BookingMapper;
+import org.cyberrealm.tech.model.Accommodation;
+import org.cyberrealm.tech.model.Booking;
+import org.cyberrealm.tech.model.Role;
+import org.cyberrealm.tech.model.User;
+import org.cyberrealm.tech.repository.AccommodationRepository;
+import org.cyberrealm.tech.repository.PaymentRepository;
+import org.cyberrealm.tech.repository.booking.BookingRepository;
+import org.cyberrealm.tech.repository.booking.BookingSpecificationBuilder;
+import org.cyberrealm.tech.service.BookingService;
+import org.cyberrealm.tech.service.NotificationService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setUser(user);
         booking.setStatus(Booking.BookingStatus.PENDING);
         bookingRepository.save(booking);
-        notificationService.sendNotification("New booking created with ID:" + booking.getId());
+        sendNotification("New booking created with ID:" + booking.getId());
         return bookingMapper.toDto(booking);
     }
 
@@ -99,10 +100,9 @@ public class BookingServiceImpl implements BookingService {
         }
         booking.setStatus(Booking.BookingStatus.CANCELED);
         bookingRepository.save(booking);
-        notificationService.sendNotification("Booking with ID:" + booking.getId()
-                + " has been cancelled");
-        notificationService.sendNotification("Accommodation with ID:"
-                + booking.getAccommodation().getId() + " has released.");
+        sendNotification("Booking with ID:" + booking.getId() + " has been cancelled");
+        sendNotification("Accommodation with ID:" + booking.getAccommodation().getId()
+                + " has released.");
         return bookingMapper.toDto(booking);
     }
 
@@ -112,14 +112,20 @@ public class BookingServiceImpl implements BookingService {
                 LocalDate.now().plusDays(DAYS_TO_ADD), Booking.BookingStatus.CANCELED
         );
         if (expiredBookings.isEmpty()) {
-            notificationService.sendNotification("No expired bookings today!");
+            sendNotification("No expired bookings today!");
         } else {
             for (Booking booking : expiredBookings) {
                 booking.setStatus(Booking.BookingStatus.EXPIRED);
                 bookingRepository.save(booking);
-                notificationService.sendNotification("Booking with ID:" + booking.getId()
-                        + "has expired.");
+                sendNotification("Booking with ID:" + booking.getId() + "has expired.");
             }
+        }
+    }
+
+    @Async
+    public void sendNotification(String message) {
+        if (notificationService != null) {
+            notificationService.sendNotification(message);
         }
     }
 
