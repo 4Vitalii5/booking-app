@@ -1,4 +1,4 @@
-package mate.academy.model;
+package org.cyberrealm.tech.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -81,6 +81,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return !isDeleted;
     }
 }
