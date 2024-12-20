@@ -1,13 +1,13 @@
-package mate.academy.controller;
+package org.cyberrealm.tech.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.accommodation.AccommodationDto;
-import mate.academy.dto.accommodation.CreateAccommodationRequestDto;
-import mate.academy.service.AccommodationService;
+import org.cyberrealm.tech.dto.accommodation.AccommodationDto;
+import org.cyberrealm.tech.dto.accommodation.CreateAccommodationRequestDto;
+import org.cyberrealm.tech.service.AccommodationService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +31,7 @@ public class AccommodationController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new accommodation",
             description = "Permits the addition of new accommodations.")
     public AccommodationDto createAccommodation(
