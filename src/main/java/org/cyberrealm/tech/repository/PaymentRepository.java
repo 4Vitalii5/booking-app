@@ -1,8 +1,8 @@
-package mate.academy.repository;
+package org.cyberrealm.tech.repository;
 
 import java.util.Optional;
-import mate.academy.model.Booking;
-import mate.academy.model.Payment;
+import org.cyberrealm.tech.model.Booking;
+import org.cyberrealm.tech.model.Payment;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,9 +21,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             + "AND p.isDeleted = false")
     boolean existsPendingPaymentsByUserId(Long id);
 
-    @Query("SELECT p.booking FROM Payment p WHERE p.sessionId = ?1")
+    @Query("SELECT p.booking FROM Payment p WHERE p.sessionId = :sessionId")
     Optional<Booking> findBookingBySessionId(String sessionId);
 
-    @Query("SELECT p FROM Payment p WHERE p.id = ?1 AND p.booking.user.id = ?2")
+    @Query("SELECT p FROM Payment p WHERE p.id = :paymentId AND p.booking.user.id = :currentUserId")
     Optional<Payment> findByIdAndUserId(Long paymentId, Long currentUserId);
 }
