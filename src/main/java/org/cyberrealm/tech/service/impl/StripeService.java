@@ -1,4 +1,4 @@
-package mate.academy.service.impl;
+package org.cyberrealm.tech.service.impl;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -9,13 +9,13 @@ import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import mate.academy.dto.stripe.DescriptionForStripeDto;
-import mate.academy.exception.PaymentProcessingException;
-import mate.academy.exception.StripeProcessingException;
-import mate.academy.model.Booking;
-import mate.academy.model.Payment;
-import mate.academy.repository.PaymentRepository;
-import mate.academy.repository.booking.BookingRepository;
+import org.cyberrealm.tech.dto.stripe.DescriptionForStripeDto;
+import org.cyberrealm.tech.exception.PaymentProcessingException;
+import org.cyberrealm.tech.exception.StripeProcessingException;
+import org.cyberrealm.tech.model.Booking;
+import org.cyberrealm.tech.model.Payment;
+import org.cyberrealm.tech.repository.PaymentRepository;
+import org.cyberrealm.tech.repository.booking.BookingRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,8 @@ public class StripeService {
     public static final long DEFAULT_QUANTITY = 1L;
     public static final String DEFAULT_CURRENCY = "usd";
     public static final BigDecimal CENTS_AMOUNT = BigDecimal.valueOf(100);
+    public static final long MAX_QUANTITY_OF_RECORDS = 100L;
+    public static final String EXPIRED_STATUS = "expired";
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
     @Value("${stripe.secret.key}")
@@ -91,7 +93,8 @@ public class StripeService {
 
     @Scheduled(cron = "0 * * * * ?")
     public void checkExpiredSession() {
-        SessionListParams params = SessionListParams.builder().setLimit(100L).build();
+        SessionListParams params = SessionListParams.builder().setLimit(MAX_QUANTITY_OF_RECORDS)
+                .build();
         try {
             List<Session> expiredSessions = getExpiredSessions(params);
             if (!expiredSessions.isEmpty()) {
@@ -114,7 +117,7 @@ public class StripeService {
 
     private List<Session> getExpiredSessions(SessionListParams params) throws StripeException {
         return Session.list(params).getData().stream()
-                .filter(session -> session.getStatus().equals("expired"))
+                .filter(session -> session.getStatus().equals(EXPIRED_STATUS))
                 .filter(session -> paymentRepository.existsBySessionId(session.getId()))
                 .toList();
     }
