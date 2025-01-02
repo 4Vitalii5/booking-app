@@ -13,12 +13,12 @@ databaseChangeLog:
       file: db/changelog/changes/06-create-roles-table.yaml
   - include:
       file: db/changelog/changes/07-create-users_roles-table.yaml
-  - include:
-      file: db/changelog/changes/08-insert-users.yaml
-  - include:
-      file: db/changelog/changes/09-insert-roles.yaml
-  - include:
-      file: db/changelog/changes/10-update-users-roles.yaml
+#  - include:
+#      file: db/changelog/changes/08-insert-users.yaml
+#  - include:
+#      file: db/changelog/changes/09-insert-roles.yaml
+#  - include:
+#      file: db/changelog/changes/10-update-users-roles.yaml
 #  - include:
 #      file: db/changelog/changes/11-insert-accommodation.yaml
 #  - include:
