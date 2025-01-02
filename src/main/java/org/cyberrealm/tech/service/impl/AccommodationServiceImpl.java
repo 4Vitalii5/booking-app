@@ -94,19 +94,14 @@ public class AccommodationServiceImpl implements AccommodationService {
         return addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
                 requestDto.country(), requestDto.city(), requestDto.state(), requestDto.street(),
                 requestDto.houseNumber()
-        ).orElseThrow(() ->
-                new EntityNotFoundException(
-                        String.format("Can't find address %s,%s,%s,%s,%s,%s.",
-                                requestDto.country(), requestDto.city(), requestDto.state(),
-                                requestDto.street(), requestDto.houseNumber(),
-                                requestDto.postalCode())
-                ));
+        );
     }
 
     private void checkAddressAvailability(CreateAccommodationRequestDto requestDto,
                                           Accommodation accommodation) {
         Address addressFromDto = getAddressByAddressDto(requestDto.addressDto());
-        if (!accommodation.getAddress().getId().equals(addressFromDto.getId())) {
+        if (addressFromDto != null
+                && !accommodation.getAddress().getId().equals(addressFromDto.getId())) {
             throw new DuplicateResourceException(
                     String.format(
                             "This address %s,%s,%s,%s,%s,%s already belong another accommodation",
