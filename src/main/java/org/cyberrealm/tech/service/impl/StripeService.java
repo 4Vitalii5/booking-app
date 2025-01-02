@@ -124,7 +124,7 @@ public class StripeService {
 
     private Booking getBookingBySessionId(String sessionId) {
         return paymentRepository.findBookingBySessionId(sessionId).orElseThrow(() ->
-                new PaymentProcessingException("Can't find booking for payment with sessionId:"
+                new PaymentProcessingException("Can't find booking for payment by sessionId:"
                         + sessionId));
     }
 }

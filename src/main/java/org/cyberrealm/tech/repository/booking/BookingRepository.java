@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.cyberrealm.tech.model.Booking;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -22,7 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByUserId(Long id, Pageable pageable);
 
     @EntityGraph(attributePaths = {"user"})
-    List<Booking> findAll(Specification<Booking> bookingSpecification, Pageable pageable);
+    Page<Booking> findAll(Specification<Booking> bookingSpecification, Pageable pageable);
 
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.accommodation.id = :accommodationId "
             + "AND b.checkOutDate > :checkInDate AND b.checkInDate < :checkOutDate")

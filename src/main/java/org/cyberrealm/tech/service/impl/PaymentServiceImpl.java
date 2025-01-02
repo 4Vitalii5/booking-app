@@ -111,10 +111,10 @@ public class PaymentServiceImpl implements PaymentService {
     private Payment getPaymentByIdAndRole(Long paymentId, User currentUser) {
         return isManager(currentUser)
                 ? paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new PaymentProcessingException("Can't find payment with id:"
+                .orElseThrow(() -> new PaymentProcessingException("Can't find payment by id:"
                         + paymentId))
                 : paymentRepository.findByIdAndUserId(paymentId, currentUser.getId())
-                .orElseThrow(() -> new PaymentProcessingException("Can't find payment with id:"
+                .orElseThrow(() -> new PaymentProcessingException("Can't find payment by id:"
                         + paymentId));
     }
 
@@ -128,7 +128,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Payment getPayment(String sessionId) {
         return paymentRepository.findBySessionId(sessionId).orElseThrow(() ->
-                new EntityNotFoundException("Can't find payment with session id:" + sessionId));
+                new EntityNotFoundException("Can't find payment by session id:" + sessionId));
     }
 
     private List<Long> getBookingIdsByRole(Long userId, User currentUser) {
@@ -155,7 +155,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Booking getBookingById(Long id) {
         return bookingRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Can't find booking with id: " + id)
+                new EntityNotFoundException("Can't find booking by id: " + id)
         );
     }
 

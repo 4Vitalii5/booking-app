@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final Role.RoleName DEFAULT_ROLE = Role.RoleName.ROLE_CUSTOMER;
+    public static final Role.RoleName DEFAULT_ROLE = Role.RoleName.ROLE_CUSTOMER;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     private User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find user with id:" + id)
+                () -> new EntityNotFoundException("Can't find user by id:" + id)
         );
     }
 }
