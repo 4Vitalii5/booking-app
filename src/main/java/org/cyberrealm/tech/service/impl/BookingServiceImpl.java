@@ -82,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto updateById(User currentUser, Long id, CreateBookingRequestDto requestDto) {
         Booking booking = getBookingById(id);
         if (!accommodationRepository.existsById(requestDto.accommodationId())) {
-            throw new BookingProcessingException("Can't find accommodation with id:"
+            throw new BookingProcessingException("Can't find accommodation by id:"
                     + requestDto.accommodationId());
         }
         ensureBookingAccess(currentUser, booking);
@@ -131,13 +131,13 @@ public class BookingServiceImpl implements BookingService {
 
     private void ensureBookingAccess(User currentUser, Booking booking) {
         if (isNotManager(currentUser) && !booking.getUser().equals(currentUser)) {
-            throw new BookingProcessingException("Can't find booking with id:" + booking.getId());
+            throw new BookingProcessingException("Can't find booking by id:" + booking.getId());
         }
     }
 
     private Booking getBookingById(Long id) {
         return bookingRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Can't find booking with id: " + id)
+                new EntityNotFoundException("Can't find booking by id: " + id)
         );
     }
 
@@ -154,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
         );
 
         Accommodation accommodation = accommodationRepository.findById(requestDto.accommodationId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find accommodation with id:"
+                .orElseThrow(() -> new EntityNotFoundException("Can't find accommodation by id:"
                         + requestDto.accommodationId()));
 
         if (overlappingBookings >= accommodation.getAvailability()) {
