@@ -10,7 +10,7 @@ public class TestConstants {
     //User
     public static final String FIRST_USER_EMAIL = "test@example.com";
     public static final String SECOND_USER_EMAIL = "maks@example.com";
-    public static final String INVALID_USER_EMAIL = "invalid@example.com";
+    public static final String INVALID_USER_EMAIL = "invalid.com";
     public static final String FIRST_USER_FIRST_NAME = "Mike";
     public static final String FIRST_USER_LAST_NAME = "Johnston";
     public static final String NEW_ROLE = "ROLE_MANAGER";
@@ -40,13 +40,15 @@ public class TestConstants {
     public static final String BOOKING_ENTITY_NOT_FOUND_EXCEPTION = "Can't find booking by id: %d";
     public static final String ACCOMMODATION = "accommodation";
     public static final long FIRST_USER_ID = 1L;
-    public static final String FIRST_USER_PASSWORD = "password";
+    public static final long SECOND_USER_ID = 2L;
+    public static final String FIRST_USER_PASSWORD = "password123";
     public static final String ENCODED_PASSWORD = "encodedPassword";
     public static final String USER_WITH_PENDING_PAYMENTS_EXCEPTION = "User with id:%d has pending "
             + "payments and cannot create new booking.";
     public static final String NEW_BOOKING_NOTIFICATION = "New booking created with ID:%d";
     public static final String INVALID_ACCOMMODATION_EXCEPTION = "Can't find accommodation by id:"
             + "%d";
+    public static final String DUPLICATE_EMAIL_MESSAGE = "User with email: %s already exists";
 
     // Payment
     public static final long FIRST_PAYMENT_ID = 1L;
@@ -93,10 +95,6 @@ public class TestConstants {
     public static final String POOL = "pool";
     public static final String ELECTRICITY = "electricity";
     public static final String WIFI = "wifi";
-
-    // Payment
-    public static final BigDecimal AMOUNT = new BigDecimal("100.00");
-    public static final String CURRENCY = "USD";
 
     public static final String USER_EMAIL = "sych@example.com";
     public static final String USER_PASSWORD = "password";
