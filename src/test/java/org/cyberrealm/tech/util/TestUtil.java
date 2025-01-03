@@ -12,6 +12,7 @@ import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_AVAILABILITY;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_PAYMENT_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_EMAIL;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_ID;
@@ -24,6 +25,7 @@ import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_ID;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_PAYMENT_ID;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_SESSION_ID;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_ID;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_ID;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_URL;
 import static org.cyberrealm.tech.util.TestConstants.STUDIO;
@@ -31,7 +33,6 @@ import static org.cyberrealm.tech.util.TestConstants.USER_EMAIL;
 import static org.cyberrealm.tech.util.TestConstants.USER_FIRST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.USER_LAST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.USER_PASSWORD;
-import static org.cyberrealm.tech.util.TestConstants.USER_ROLE;
 import static org.cyberrealm.tech.util.TestConstants.WIFI;
 
 import com.stripe.model.checkout.Session;
@@ -209,6 +210,17 @@ public class TestUtil {
         FIRST_USER.setEmail("oleksandr@ukr.net");
         FIRST_USER.setPassword("1234");
         FIRST_USER.setRoles(Set.of(MANAGER_ROLE));
+    }
+
+    public static final User SECOND_USER = new User();
+
+    static {
+        SECOND_USER.setId(SECOND_USER_ID);
+        SECOND_USER.setFirstName("Matvii");
+        SECOND_USER.setLastName("Sych");
+        SECOND_USER.setEmail("sych@ukr.net");
+        SECOND_USER.setPassword("password");
+        SECOND_USER.setRoles(Set.of(CUSTOMER_ROLE));
     }
 
     public static final CreateBookingRequestDto CREATE_BOOKING_REQUEST_DTO =
@@ -408,14 +420,14 @@ public class TestUtil {
 
     public static final UserRegistrationRequestDto USER_REGISTRATION_REQUEST_DTO =
             new UserRegistrationRequestDto(
-            USER_EMAIL,
-            USER_PASSWORD,
-            USER_FIRST_NAME,
-            USER_LAST_NAME,
-            USER_ROLE
-    );
+                    USER_EMAIL,
+                    USER_PASSWORD,
+                    USER_PASSWORD,
+                    USER_FIRST_NAME,
+                    USER_LAST_NAME
+            );
     public static final UserLoginRequestDto USER_LOGIN_REQUEST_DTO = new UserLoginRequestDto(
-            USER_EMAIL,
+            FIRST_USER_EMAIL,
             USER_PASSWORD
     );
 }
