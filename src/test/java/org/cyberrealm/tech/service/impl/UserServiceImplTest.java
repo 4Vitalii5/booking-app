@@ -35,6 +35,7 @@ import org.cyberrealm.tech.model.User;
 import org.cyberrealm.tech.repository.RoleRepository;
 import org.cyberrealm.tech.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -198,4 +199,88 @@ class UserServiceImplTest {
         verify(userMapper, times(1)).updateUser(user, userInfoUpdateDto);
         verify(userMapper, times(1)).toUserResponse(user);
     }
+
+    @Test
+    @DisplayName("Register should throw EntityNotFoundException when default role not found")
+    void register_roleNotFound_throwsEntityNotFoundException() {
+        when(userMapper.toModel(userRegistrationRequestDto)).thenReturn(user);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(roleRepository.findByRole(DEFAULT_ROLE)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                userService.register(userRegistrationRequestDto));
+        String actual = exception.getMessage();
+        String expected = "Role: ROLE_CUSTOMER not found";
+        assertThat(actual).isEqualTo(expected);
+        verify(userMapper, times(1)).toModel(userRegistrationRequestDto);
+        verify(userRepository, times(1)).findByEmail(user.getEmail());
+        verify(roleRepository, times(1)).findByRole(DEFAULT_ROLE);
+        verify(passwordEncoder, times(0)).encode(any(String.class));
+        verify(userRepository, times(0)).save(any(User.class));
+        verify(userMapper, times(0)).toUserResponse(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Update should throw EntityNotFoundException when new role not found")
+    void update_newRoleNotFound_throwsEntityNotFoundException() {
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+        when(roleRepository.findByRole(any(Role.RoleName.class))).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                userService.update(FIRST_USER_ID, userRoleUpdateDto));
+        String actual = exception.getMessage();
+        String expected = "Role: " + userRoleUpdateDto.newRole() + " not found";
+        assertThat(actual).isEqualTo(expected);
+        verify(userRepository, times(1)).findById(FIRST_USER_ID);
+        verify(roleRepository, times(1))
+                .findByRole(Role.RoleName.valueOf(userRoleUpdateDto.newRole()));
+        verify(userRepository, times(0)).save(any(User.class));
+        verify(userMapper, times(0)).toUserResponse(any(User.class));
+    }
+
+    @Test
+    @DisplayName("UpdateUserById should throw EntityNotFoundException when user not found")
+    void updateUserById_nonExistingUser_throwsEntityNotFoundException() {
+        UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto(
+                NEW_FIRST_NAME,
+                NEW_LAST_NAME
+        );
+
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                userService.updateUserById(FIRST_USER_ID, userInfoUpdateDto));
+        String actual = exception.getMessage();
+        String expected = "Can't find user by id:" + FIRST_USER_ID;
+        assertThat(actual).isEqualTo(expected);
+        verify(userRepository, times(1)).findById(FIRST_USER_ID);
+        verify(userMapper, times(0))
+                .updateUser(any(User.class), any(UserInfoUpdateDto.class));
+        verify(userMapper, times(0)).toUserResponse(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Get user by ID should return correct userResponseDto")
+    void getUserById_existingUser_returnsUserResponseDto() {
+        when(userRepository.findById(FIRST_USER_ID)).thenReturn(Optional.of(user));
+
+        UserResponseDto actual = userService.findById(FIRST_USER_ID);
+
+        assertThat(actual).isEqualTo(userResponseDto);
+        verify(userRepository, times(1)).findById(FIRST_USER_ID);
+    }
+
+    @Test
+    @DisplayName("Get user by ID should throw EntityNotFoundException when user not found")
+    void getUserById_nonExistingUser_throwsEntityNotFoundException() {
+        when(userRepository.findById(FIRST_USER_ID)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                userService.findById(FIRST_USER_ID));
+        String actual = exception.getMessage();
+        String expected = "Can't find user by id:" + FIRST_USER_ID;
+        assertThat(actual).isEqualTo(expected);
+        verify(userRepository, times(1)).findById(FIRST_USER_ID);
+    }
+
 }
