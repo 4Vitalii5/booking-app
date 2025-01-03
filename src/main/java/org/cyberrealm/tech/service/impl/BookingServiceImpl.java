@@ -117,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
             for (Booking booking : expiredBookings) {
                 booking.setStatus(Booking.BookingStatus.EXPIRED);
                 bookingRepository.save(booking);
-                sendNotification("Booking with ID:" + booking.getId() + "has expired.");
+                sendNotification("Booking with ID:" + booking.getId() + " has expired.");
             }
         }
     }
@@ -154,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
         );
 
         Accommodation accommodation = accommodationRepository.findById(requestDto.accommodationId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find accommodation by id:"
+                .orElseThrow(() -> new EntityNotFoundException("Can't find accommodation by id: "
                         + requestDto.accommodationId()));
 
         if (overlappingBookings >= accommodation.getAvailability()) {
