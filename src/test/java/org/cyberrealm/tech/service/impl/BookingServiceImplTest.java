@@ -46,8 +46,6 @@ import org.cyberrealm.tech.mapper.BookingMapper;
 import org.cyberrealm.tech.mapper.impl.BookingMapperImpl;
 import org.cyberrealm.tech.model.Accommodation;
 import org.cyberrealm.tech.model.Booking;
-import org.cyberrealm.tech.model.Role;
-import org.cyberrealm.tech.model.User;
 import org.cyberrealm.tech.repository.AccommodationRepository;
 import org.cyberrealm.tech.repository.PaymentRepository;
 import org.cyberrealm.tech.repository.booking.BookingRepository;
@@ -90,20 +88,20 @@ class BookingServiceImplTest {
 
     @BeforeEach
     void beforeEach() {
-            FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
-            FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
-            FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
-            FIRST_ACCOMMODATION.setSize(STUDIO);
-            FIRST_ACCOMMODATION.setAmenities(AMENITIES);
-            FIRST_ACCOMMODATION.setDailyRate(DAILY_RATE_23);
-            FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
+        FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
+        FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
+        FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
+        FIRST_ACCOMMODATION.setSize(STUDIO);
+        FIRST_ACCOMMODATION.setAmenities(AMENITIES);
+        FIRST_ACCOMMODATION.setDailyRate(DAILY_RATE_23);
+        FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
 
-            FIRST_BOOKING.setId(FIRST_BOOKING_ID);
-            FIRST_BOOKING.setCheckInDate(LocalDate.now());
-            FIRST_BOOKING.setCheckOutDate(LocalDate.now().plusDays(10));
-            FIRST_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
-            FIRST_BOOKING.setUser(FIRST_USER);
-            FIRST_BOOKING.setStatus(Booking.BookingStatus.PENDING);
+        FIRST_BOOKING.setId(FIRST_BOOKING_ID);
+        FIRST_BOOKING.setCheckInDate(LocalDate.now());
+        FIRST_BOOKING.setCheckOutDate(LocalDate.now().plusDays(10));
+        FIRST_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
+        FIRST_BOOKING.setUser(FIRST_USER);
+        FIRST_BOOKING.setStatus(Booking.BookingStatus.PENDING);
     }
 
     @Test
@@ -247,7 +245,7 @@ class BookingServiceImplTest {
     @Test
     @DisplayName("Validate accommodation availability should throw BookingProcessingException "
             + "when accommodation is not available")
-    void validateAccommodationAvailability_accommodationNotAvailable_throwsBookingProcessingException() {
+    void validateAccommodationAvailability_accommodationNotAvailable_throwsException() {
         when(bookingRepository.countOverlappingBookings(FIRST_ACCOMMODATION_ID,
                 CREATE_BOOKING_REQUEST_DTO.checkInDate(),
                 CREATE_BOOKING_REQUEST_DTO.checkOutDate()))
