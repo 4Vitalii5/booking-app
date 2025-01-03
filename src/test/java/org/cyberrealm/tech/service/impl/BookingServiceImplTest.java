@@ -2,7 +2,9 @@ package org.cyberrealm.tech.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.cyberrealm.tech.util.TestConstants.BOOKING_ENTITY_NOT_FOUND_EXCEPTION;
+import static org.cyberrealm.tech.util.TestConstants.DAILY_RATE_23;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_AVAILABILITY;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_EXCEPTION;
@@ -10,33 +12,42 @@ import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.NEW_BOOKING_NOTIFICATION;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_BOOKING_ID;
+import static org.cyberrealm.tech.util.TestConstants.STUDIO;
 import static org.cyberrealm.tech.util.TestConstants.USER_WITH_PENDING_PAYMENTS_EXCEPTION;
+import static org.cyberrealm.tech.util.TestUtil.AMENITIES;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_PAGE;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_RESPONSE_DTO;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_SEARCH_PARAMETERS;
 import static org.cyberrealm.tech.util.TestUtil.CANCELLED_BOOKING_RESPONSE_DTO;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_BOOKING_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_ACCOMMODATION;
+import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_BOOKING;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_USER;
 import static org.cyberrealm.tech.util.TestUtil.INVALID_CREATE_BOOKING_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.PAGEABLE;
 import static org.cyberrealm.tech.util.TestUtil.SECOND_BOOKING;
+import static org.cyberrealm.tech.util.TestUtil.SECOND_USER;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.cyberrealm.tech.dto.booking.BookingDto;
+import org.cyberrealm.tech.dto.booking.CreateBookingRequestDto;
 import org.cyberrealm.tech.exception.BookingForbiddenException;
 import org.cyberrealm.tech.exception.BookingProcessingException;
 import org.cyberrealm.tech.exception.EntityNotFoundException;
 import org.cyberrealm.tech.mapper.BookingMapper;
 import org.cyberrealm.tech.mapper.impl.BookingMapperImpl;
+import org.cyberrealm.tech.model.Accommodation;
 import org.cyberrealm.tech.model.Booking;
+import org.cyberrealm.tech.model.Role;
+import org.cyberrealm.tech.model.User;
 import org.cyberrealm.tech.repository.AccommodationRepository;
 import org.cyberrealm.tech.repository.PaymentRepository;
 import org.cyberrealm.tech.repository.booking.BookingRepository;
@@ -75,9 +86,24 @@ class BookingServiceImplTest {
     @InjectMocks
     private BookingServiceImpl bookingService;
 
+    private CreateBookingRequestDto createBookingRequestDto;
+
     @BeforeEach
     void beforeEach() {
+            FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
+            FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
+            FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
+            FIRST_ACCOMMODATION.setSize(STUDIO);
+            FIRST_ACCOMMODATION.setAmenities(AMENITIES);
+            FIRST_ACCOMMODATION.setDailyRate(DAILY_RATE_23);
+            FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
 
+            FIRST_BOOKING.setId(FIRST_BOOKING_ID);
+            FIRST_BOOKING.setCheckInDate(LocalDate.now());
+            FIRST_BOOKING.setCheckOutDate(LocalDate.now().plusDays(10));
+            FIRST_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
+            FIRST_BOOKING.setUser(FIRST_USER);
+            FIRST_BOOKING.setStatus(Booking.BookingStatus.PENDING);
     }
 
     @Test
@@ -206,4 +232,76 @@ class BookingServiceImplTest {
         verify(bookingRepository, times(1)).findById(SECOND_BOOKING_ID);
         verify(notificationService, times(2)).sendNotification(anyString());
     }
+
+    @Test
+    @DisplayName("Ensure booking access for non-manager user without access should throw "
+            + "BookingProcessingException")
+    void ensureBookingAccess_nonManagerUser_withoutAccess_throwsBookingProcessingException() {
+        when(bookingRepository.findById(FIRST_BOOKING_ID))
+                .thenReturn(Optional.of(FIRST_BOOKING));
+
+        assertThrows(BookingProcessingException.class, () ->
+                bookingService.findBookingById(FIRST_BOOKING_ID, SECOND_USER));
+    }
+
+    @Test
+    @DisplayName("Validate accommodation availability should throw BookingProcessingException "
+            + "when accommodation is not available")
+    void validateAccommodationAvailability_accommodationNotAvailable_throwsBookingProcessingException() {
+        when(bookingRepository.countOverlappingBookings(FIRST_ACCOMMODATION_ID,
+                CREATE_BOOKING_REQUEST_DTO.checkInDate(),
+                CREATE_BOOKING_REQUEST_DTO.checkOutDate()))
+                .thenReturn(FIRST_ACCOMMODATION.getAvailability());
+        when(accommodationRepository.findById(FIRST_ACCOMMODATION_ID))
+                .thenReturn(Optional.of(FIRST_ACCOMMODATION));
+
+        BookingProcessingException exception = assertThrows(BookingProcessingException.class, () ->
+                bookingService.save(CREATE_BOOKING_REQUEST_DTO, FIRST_USER));
+        String actual = exception.getMessage();
+        String expected = "Accommodation is not available for the selected dates.";
+        assertThat(actual).isEqualTo(expected);
+        verify(bookingRepository, times(1))
+                .countOverlappingBookings(FIRST_ACCOMMODATION_ID,
+                        CREATE_BOOKING_REQUEST_DTO.checkInDate(),
+                        CREATE_BOOKING_REQUEST_DTO.checkOutDate());
+        verify(accommodationRepository, times(1))
+                .findById(FIRST_ACCOMMODATION_ID);
+    }
+
+    @Test
+    @DisplayName("Validate accommodation availability should throw EntityNotFoundException when "
+            + "accommodation not found")
+    void validateAccommodationAvailability_accommodationNotFound_throwsEntityNotFoundException() {
+        when(accommodationRepository.findById(INVALID_ACCOMMODATION_ID))
+                .thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                bookingService.save(INVALID_CREATE_BOOKING_REQUEST_DTO, FIRST_USER));
+        String actual = exception.getMessage();
+        String expected = String.format("Can't find accommodation by id: %s",
+                INVALID_ACCOMMODATION_ID);
+        assertThat(actual).isEqualTo(expected);
+        verify(accommodationRepository, times(1))
+                .findById(INVALID_ACCOMMODATION_ID);
+    }
+
+    @Test
+    @DisplayName("Check expired bookings and send notifications")
+    void checkExpiredBookings_expiredBookings_foundAndProcessed() {
+        when(bookingRepository.findAllByCheckOutDateBeforeAndStatusNot(LocalDate.now().plusDays(1),
+                Booking.BookingStatus.CANCELED))
+                .thenReturn(List.of(FIRST_BOOKING));
+        when(bookingRepository.save(FIRST_BOOKING)).thenReturn(FIRST_BOOKING);
+
+        bookingService.checkExpiredBookings();
+
+        assertThat(FIRST_BOOKING.getStatus()).isEqualTo(Booking.BookingStatus.EXPIRED);
+        verify(bookingRepository, times(1))
+                .findAllByCheckOutDateBeforeAndStatusNot(LocalDate.now().plusDays(1),
+                        Booking.BookingStatus.CANCELED);
+        verify(bookingRepository, times(1)).save(FIRST_BOOKING);
+        verify(notificationService, times(1)).sendNotification(
+                String.format("Booking with ID:%d has expired.", FIRST_BOOKING.getId()));
+    }
+
 }
