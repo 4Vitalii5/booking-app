@@ -1,16 +1,14 @@
 package org.cyberrealm.tech.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cyberrealm.tech.util.TestConstants.ACCOMMODATION_TYPE_HOUSE;
-import static org.cyberrealm.tech.util.TestConstants.DAILY_RATE_23;
 import static org.cyberrealm.tech.util.TestConstants.ELECTRICITY;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_AVAILABILITY;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_ID;
+import static org.cyberrealm.tech.util.TestConstants.INVALID_TYPE_VALUE;
 import static org.cyberrealm.tech.util.TestConstants.POOL;
-import static org.cyberrealm.tech.util.TestConstants.STUDIO;
 import static org.cyberrealm.tech.util.TestConstants.WIFI;
-import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
+import static org.cyberrealm.tech.util.TestUtil.AMENITIES;
+import static org.cyberrealm.tech.util.TestUtil.CREATE_ACCOMMODATION_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.INVALID_CREATE_ACCOMMODATION_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.UPDATE_ACCOMMODATION_REQUEST_DTO;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -21,10 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import org.cyberrealm.tech.dto.accommodation.AccommodationDto;
-import org.cyberrealm.tech.dto.accommodation.CreateAccommodationRequestDto;
-import org.cyberrealm.tech.dto.address.CreateAddressRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,29 +38,12 @@ public class AccommodationControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    private CreateAccommodationRequestDto requestDto;
-    private CreateAddressRequestDto addressRequestDto;
-    private List<String> amenities;
 
     @BeforeEach
     void setUp() {
-        amenities = List.of(POOL, ELECTRICITY, WIFI);
-        addressRequestDto = new CreateAddressRequestDto(
-                FIRST_ADDRESS.getCountry(),
-                FIRST_ADDRESS.getCity(),
-                FIRST_ADDRESS.getState(),
-                FIRST_ADDRESS.getStreet(),
-                FIRST_ADDRESS.getHouseNumber(),
-                FIRST_ADDRESS.getPostalCode()
-        );
-        requestDto = new CreateAccommodationRequestDto(
-                ACCOMMODATION_TYPE_HOUSE,
-                addressRequestDto,
-                STUDIO,
-                amenities,
-                DAILY_RATE_23,
-                FIRST_AVAILABILITY
-        );
+        AMENITIES.add(POOL);
+        AMENITIES.add(ELECTRICITY);
+        AMENITIES.add(WIFI);
     }
 
     @Test
@@ -84,14 +62,14 @@ public class AccommodationControllerTest {
         MvcResult mvcResult = mockMvc.perform(post("/accommodations")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .content(objectMapper.writeValueAsString(CREATE_ACCOMMODATION_REQUEST_DTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         AccommodationDto responseDto = objectMapper.readValue(jsonResponse, AccommodationDto.class);
         assertThat(responseDto).isNotNull();
-        assertThat(responseDto.type()).isEqualTo(requestDto.type());
+        assertThat(responseDto.type()).isEqualTo(CREATE_ACCOMMODATION_REQUEST_DTO.type());
     }
 
     @Test
@@ -249,8 +227,6 @@ public class AccommodationControllerTest {
                 .andReturn();
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
-        assertThat(jsonResponse).contains("Invalid type value");
+        assertThat(jsonResponse).contains(INVALID_TYPE_VALUE);
     }
 }
-
-
