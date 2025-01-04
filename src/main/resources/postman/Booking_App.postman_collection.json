@@ -1,0 +1,502 @@
+{
+	"info": {
+		"_postman_id": "370fbd00-41ee-4a7c-b66a-62e5e4df2a36",
+		"name": "Booking App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38618846"
+	},
+	"item": [
+		{
+			"name": "Accommodation",
+			"item": [
+				{
+					"name": "Get all accommodations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/accommodations"
+					},
+					"response": []
+				},
+				{
+					"name": "Get accommodation by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/accommodations/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Add accommodation",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "1234",
+								"username": "vitalii@ukr.net"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\":\"HOUSE\",\r\n    \"addressDto\":{\r\n        \"houseNumber\":\"25\",\r\n        \"street\":\"Shevchenka\",\r\n        \"city\":\"Lviv\",\r\n        \"state\":\"Lvivskyi\",\r\n        \"postalCode\":\"80352\",\r\n        \"country\":\"Ukraine\"\r\n    },\r\n    \"size\":\"Studio\",\r\n    \"amenities\":[\r\n        \"running water\", \"electricity\", \"roads\"\r\n    ],\r\n    \"dailyRate\":40.0,\r\n    \"availability\":2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/accommodations"
+					},
+					"response": []
+				},
+				{
+					"name": "Update accommodation",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\":\"APARTMENT\",\r\n    \"addressDto\":{\r\n        \"houseNumber\":\"25\",\r\n        \"street\":\"Shevchenka\",\r\n        \"city\":\"Lviv\",\r\n        \"state\":\"Lvivskyi\",\r\n        \"postalCode\":\"80352\",\r\n        \"country\":\"Ukraine\"\r\n    },\r\n    \"size\":\"Studio\",\r\n    \"amenities\":[\r\n        \"running water\", \"electricity\", \"roads\"\r\n    ],\r\n    \"dailyRate\":10.0,\r\n    \"availability\":2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/accommodations/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete accommodation by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/accommodations/2"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Authorization",
+			"item": [
+				{
+					"name": "Register user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"sych@example.com\",\r\n  \"password\": \"password123\",\r\n  \"repeatPassword\": \"password123\",\r\n  \"firstName\": \"Mike\",\r\n  \"lastName\": \"Green\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/auth/registration"
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"sych@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/auth/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "User info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/me"
+					},
+					"response": []
+				},
+				{
+					"name": "Update user info",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Vitalii\",\r\n    \"lastName\": \"Pavlyk\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/me"
+					},
+					"response": []
+				},
+				{
+					"name": "Update users roles",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"newRole\":\"ROLE_MANAGER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1/role"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "Add booking",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "1234",
+								"username": "vitalii@ukr.net"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"checkInDate\":\"2025-01-07\",\r\n    \"checkOutDate\":\"2025-01-10\",\r\n    \"accommodationId\":1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/bookings"
+					},
+					"response": []
+				},
+				{
+					"name": "Search bookings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "PENDING",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user bookings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/bookings/my"
+					},
+					"response": []
+				},
+				{
+					"name": "Get booking by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/bookings/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update users booking details",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"checkInDate\":\"2025-01-18\",\r\n    \"checkOutDate\":\"2025-01-21\",\r\n    \"accommodationId\":1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/bookings/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel booking by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/bookings/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "Create Payment",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": {
+								"password": "1234",
+								"username": "vitalii@ukr.net"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bookingId\":3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/payments"
+					},
+					"response": []
+				},
+				{
+					"name": "Get payment info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/payments?userId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Renew the Payment session",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/payments/renew/?paymentId=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments",
+								"renew",
+								""
+							],
+							"query": [
+								{
+									"key": "paymentId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get success payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/payments/success/?sessionId=cs_test_a1XzwuGK4WphGEdhLBkYqEIap2KzM4wKN9Oxl6amGgknNOCD9rUcZSpd1o",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments",
+								"success",
+								""
+							],
+							"query": [
+								{
+									"key": "sessionId",
+									"value": "cs_test_a1XzwuGK4WphGEdhLBkYqEIap2KzM4wKN9Oxl6amGgknNOCD9rUcZSpd1o"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cancel payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/payments/cancel/?sessionId=cs_test_a1yDeSAH2sPWWh6JlhPyRTacr4KBLmT0l1c3wsTx8y8pVf4scO1gUwbBTZ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"payments",
+								"cancel",
+								""
+							],
+							"query": [
+								{
+									"key": "sessionId",
+									"value": "cs_test_a1yDeSAH2sPWWh6JlhPyRTacr4KBLmT0l1c3wsTx8y8pVf4scO1gUwbBTZ"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": {
+			"password": "1234",
+			"username": "vitalii@ukr.net"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
