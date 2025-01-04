@@ -3,47 +3,50 @@ package org.cyberrealm.tech.util;
 import static org.cyberrealm.tech.util.TestConstants.ACCOMMODATION_TYPE_HOUSE;
 import static org.cyberrealm.tech.util.TestConstants.CHECK_IN_DATE;
 import static org.cyberrealm.tech.util.TestConstants.CHECK_OUT_DATE;
+import static org.cyberrealm.tech.util.TestConstants.CONDO;
 import static org.cyberrealm.tech.util.TestConstants.DAILY_RATE_23;
-import static org.cyberrealm.tech.util.TestConstants.ELECTRICITY;
-import static org.cyberrealm.tech.util.TestConstants.EXPIRED_PAYMENT_ID;
-import static org.cyberrealm.tech.util.TestConstants.EXPIRED_SESSION_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_CITY;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_COUNTRY;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_HOUSE_NUMBER;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_POSTAL_CODE;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STATE;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STREET;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_AVAILABILITY;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_PAYMENT_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_EMAIL;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_FIRST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_LAST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_ID;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_ID;
+import static org.cyberrealm.tech.util.TestConstants.INVALID_TYPE;
+import static org.cyberrealm.tech.util.TestConstants.NEW_ROLE;
 import static org.cyberrealm.tech.util.TestConstants.PAYMENT_AMOUNT;
-import static org.cyberrealm.tech.util.TestConstants.PAYMENT_STATUS;
 import static org.cyberrealm.tech.util.TestConstants.PENDING;
-import static org.cyberrealm.tech.util.TestConstants.POOL;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_ACCOMMODATION_ID;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_ID;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_CITY;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_COUNTRY;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_HOUSE_NUMBER;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_POSTAL_CODE;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_STATE;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_STREET;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_BOOKING_ID;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_PAYMENT_ID;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_SESSION_ID;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_ID;
-import static org.cyberrealm.tech.util.TestConstants.SESSION_ID;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_CHECK_OUT_DATE;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_URL;
 import static org.cyberrealm.tech.util.TestConstants.STUDIO;
 import static org.cyberrealm.tech.util.TestConstants.USER_EMAIL;
 import static org.cyberrealm.tech.util.TestConstants.USER_FIRST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.USER_LAST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.USER_PASSWORD;
-import static org.cyberrealm.tech.util.TestConstants.WIFI;
 
+import com.stripe.exception.ApiException;
 import com.stripe.model.checkout.Session;
-import com.stripe.param.checkout.SessionListParams;
+import com.stripe.model.checkout.SessionCollection;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.cyberrealm.tech.dto.accommodation.AccommodationDto;
 import org.cyberrealm.tech.dto.accommodation.CreateAccommodationRequestDto;
 import org.cyberrealm.tech.dto.address.CreateAddressRequestDto;
@@ -53,9 +56,11 @@ import org.cyberrealm.tech.dto.booking.CreateBookingRequestDto;
 import org.cyberrealm.tech.dto.payment.CreatePaymentRequestDto;
 import org.cyberrealm.tech.dto.payment.PaymentDto;
 import org.cyberrealm.tech.dto.payment.PaymentWithoutSessionDto;
+import org.cyberrealm.tech.dto.stripe.DescriptionForStripeDto;
 import org.cyberrealm.tech.dto.user.UserInfoUpdateDto;
 import org.cyberrealm.tech.dto.user.UserLoginRequestDto;
 import org.cyberrealm.tech.dto.user.UserRegistrationRequestDto;
+import org.cyberrealm.tech.dto.user.UserResponseDto;
 import org.cyberrealm.tech.dto.user.UserRoleUpdateDto;
 import org.cyberrealm.tech.model.Accommodation;
 import org.cyberrealm.tech.model.Address;
@@ -72,58 +77,76 @@ public class TestUtil {
     //Amenities
     public static final List<String> AMENITIES = new ArrayList<>();
 
-    static {
-        AMENITIES.add(POOL);
-        AMENITIES.add(ELECTRICITY);
-        AMENITIES.add(WIFI);
-    }
+    //    static {
+    //        AMENITIES.add(POOL);
+    //        AMENITIES.add(ELECTRICITY);
+    //        AMENITIES.add(WIFI);
+    //    }
 
-    //Address
+    //Addresses
     public static final Address FIRST_ADDRESS = new Address();
 
-    static {
-        FIRST_ADDRESS.setId(FIRST_ADDRESS_ID);
-        FIRST_ADDRESS.setCountry("USA");
-        FIRST_ADDRESS.setCity("Chicago");
-        FIRST_ADDRESS.setState("Illinois");
-        FIRST_ADDRESS.setStreet("Cicero");
-        FIRST_ADDRESS.setHouseNumber("49th Ave");
-        FIRST_ADDRESS.setPostalCode("60804");
-    }
+    //    static {
+    //        FIRST_ADDRESS.setId(FIRST_ADDRESS_ID);
+    //        FIRST_ADDRESS.setCountry("USA");
+    //        FIRST_ADDRESS.setCity("Chicago");
+    //        FIRST_ADDRESS.setState("Illinois");
+    //        FIRST_ADDRESS.setStreet("Cicero");
+    //        FIRST_ADDRESS.setHouseNumber("49th Ave");
+    //        FIRST_ADDRESS.setPostalCode("60804");
+    //    }
 
     public static final Address SECOND_ADDRESS = new Address();
 
-    static {
-        SECOND_ADDRESS.setId(SECOND_ADDRESS_ID);
-        SECOND_ADDRESS.setCountry("Ukraine");
-        SECOND_ADDRESS.setCity("Lviv");
-        SECOND_ADDRESS.setState("Lvivskyi");
-        SECOND_ADDRESS.setStreet("Shevchenka");
-        SECOND_ADDRESS.setHouseNumber("25");
-        SECOND_ADDRESS.setPostalCode("80352");
-    }
+    //    static {
+    //        SECOND_ADDRESS.setId(SECOND_ADDRESS_ID);
+    //        SECOND_ADDRESS.setCountry("Ukraine");
+    //        SECOND_ADDRESS.setCity("Lviv");
+    //        SECOND_ADDRESS.setState("Lvivskyi");
+    //        SECOND_ADDRESS.setStreet("Shevchenka");
+    //        SECOND_ADDRESS.setHouseNumber("25");
+    //        SECOND_ADDRESS.setPostalCode("80352");
+    //    }
 
     public static final CreateAddressRequestDto CREATE_ADDRESS_REQUEST_DTO =
             new CreateAddressRequestDto(
-                    FIRST_ADDRESS.getCountry(),
-                    FIRST_ADDRESS.getCity(),
-                    FIRST_ADDRESS.getState(),
-                    FIRST_ADDRESS.getStreet(),
-                    FIRST_ADDRESS.getHouseNumber(),
-                    FIRST_ADDRESS.getPostalCode()
+                    FIRST_ADDRESS_COUNTRY,
+                    FIRST_ADDRESS_CITY,
+                    FIRST_ADDRESS_STATE,
+                    FIRST_ADDRESS_STREET,
+                    FIRST_ADDRESS_HOUSE_NUMBER,
+                    FIRST_ADDRESS_POSTAL_CODE
             );
 
     public static final CreateAddressRequestDto SECOND_CREATE_ADDRESS_REQUEST_DTO =
             new CreateAddressRequestDto(
-                    SECOND_ADDRESS.getCountry(),
-                    SECOND_ADDRESS.getCity(),
-                    SECOND_ADDRESS.getState(),
-                    SECOND_ADDRESS.getStreet(),
-                    SECOND_ADDRESS.getHouseNumber(),
-                    SECOND_ADDRESS.getPostalCode()
+                    SECOND_ADDRESS_COUNTRY,
+                    SECOND_ADDRESS_CITY,
+                    SECOND_ADDRESS_STATE,
+                    SECOND_ADDRESS_STREET,
+                    SECOND_ADDRESS_HOUSE_NUMBER,
+                    SECOND_ADDRESS_POSTAL_CODE
             );
 
-    //Accommodation
+    public static final Address INVALID_ADDRESS = new Address();
+
+    //    static {
+    //        INVALID_ADDRESS.setId(INVALID_ADDRESS_ID);
+    //        INVALID_ADDRESS.setCountry("Canada");
+    //        INVALID_ADDRESS.setCity("Toronto");
+    //        INVALID_ADDRESS.setState("Ontario");
+    //        INVALID_ADDRESS.setStreet("Bloor Street");
+    //        INVALID_ADDRESS.setHouseNumber("123");
+    //        INVALID_ADDRESS.setPostalCode("M6H 1M9");
+    //    }
+
+    public static final CreateAddressRequestDto UPDATE_ADDRESS_REQUEST_DTO =
+            new CreateAddressRequestDto(
+                    FIRST_ADDRESS_COUNTRY, FIRST_ADDRESS_CITY, FIRST_ADDRESS_STATE,
+                    FIRST_ADDRESS_STREET, FIRST_ADDRESS_HOUSE_NUMBER, FIRST_ADDRESS_POSTAL_CODE
+            );
+
+    //Accommodations
     public static final CreateAccommodationRequestDto CREATE_ACCOMMODATION_REQUEST_DTO =
             new CreateAccommodationRequestDto(
                     ACCOMMODATION_TYPE_HOUSE,
@@ -156,15 +179,15 @@ public class TestUtil {
 
     public static final Accommodation FIRST_ACCOMMODATION = new Accommodation();
 
-    static {
-        FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
-        FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
-        FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
-        FIRST_ACCOMMODATION.setSize(STUDIO);
-        FIRST_ACCOMMODATION.setAmenities(AMENITIES);
-        FIRST_ACCOMMODATION.setDailyRate(DAILY_RATE_23);
-        FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
-    }
+    //    static {
+    //        FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
+    //        FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
+    //        FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
+    //        FIRST_ACCOMMODATION.setSize(STUDIO);
+    //        FIRST_ACCOMMODATION.setAmenities(AMENITIES);
+    //        FIRST_ACCOMMODATION.setDailyRate(DAILY_RATE_23);
+    //        FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
+    //    }
 
     public static final Accommodation SECOND_ACCOMMODATION = new Accommodation();
 
@@ -189,41 +212,88 @@ public class TestUtil {
                     FIRST_AVAILABILITY
             );
 
+    public static final CreateAccommodationRequestDto UPDATE_ACCOMMODATION_REQUEST_DTO =
+            new CreateAccommodationRequestDto(
+                    CONDO, UPDATE_ADDRESS_REQUEST_DTO, STUDIO,
+                    AMENITIES, BigDecimal.valueOf(150.00), 1
+            );
+
+    public static final CreateAccommodationRequestDto INVALID_CREATE_ACCOMMODATION_REQUEST_DTO =
+            new CreateAccommodationRequestDto(
+                    INVALID_TYPE, CREATE_ADDRESS_REQUEST_DTO, STUDIO,
+                    AMENITIES, BigDecimal.valueOf(100.00), 1);
+
+    //Roles
     public static final Role CUSTOMER_ROLE = new Role();
 
-    static {
-        CUSTOMER_ROLE.setRole(Role.RoleName.ROLE_CUSTOMER);
-    }
+    //    static {
+    //        CUSTOMER_ROLE.setRole(Role.RoleName.ROLE_CUSTOMER);
+    //    }
 
     public static final Role MANAGER_ROLE = new Role();
 
-    static {
-        MANAGER_ROLE.setRole(Role.RoleName.ROLE_MANAGER);
-    }
+    //    static {
+    //        MANAGER_ROLE.setRole(Role.RoleName.ROLE_MANAGER);
+    //    }
 
+    //Users
     public static final User FIRST_USER = new User();
 
-    static {
-        FIRST_USER.setId(FIRST_USER_ID);
-        FIRST_USER.setFirstName("Oleksandr");
-        FIRST_USER.setLastName("Pavlyk");
-        FIRST_USER.setEmail("oleksandr@ukr.net");
-        FIRST_USER.setPassword("1234");
-        FIRST_USER.setRoles(Set.of(MANAGER_ROLE));
-    }
+    //    static {
+    //        FIRST_USER.setId(FIRST_USER_ID);
+    //        FIRST_USER.setFirstName("Oleksandr");
+    //        FIRST_USER.setLastName("Pavlyk");
+    //        FIRST_USER.setEmail("oleksandr@ukr.net");
+    //        FIRST_USER.setPassword("1234");
+    //        FIRST_USER.setRoles(Set.of(MANAGER_ROLE));
+    //    }
 
     public static final User SECOND_USER = new User();
 
-    static {
-        SECOND_USER.setId(SECOND_USER_ID);
-        SECOND_USER.setFirstName("Matvii");
-        SECOND_USER.setLastName("Sych");
-        SECOND_USER.setEmail("sych@ukr.net");
-        SECOND_USER.setPassword("password");
-        SECOND_USER.setRoles(Set.of(CUSTOMER_ROLE));
-    }
+    //    static {
+    //        SECOND_USER.setId(SECOND_USER_ID);
+    //        SECOND_USER.setFirstName("Matvii");
+    //        SECOND_USER.setLastName("Sych");
+    //        SECOND_USER.setEmail("sych@ukr.net");
+    //        SECOND_USER.setPassword("password");
+    //        SECOND_USER.setRoles(Set.of(CUSTOMER_ROLE));
+    //    }
 
+    public static final UserRegistrationRequestDto USER_REGISTRATION_REQUEST_DTO =
+            new UserRegistrationRequestDto(
+                    USER_EMAIL,
+                    USER_PASSWORD,
+                    USER_PASSWORD,
+                    USER_FIRST_NAME,
+                    USER_LAST_NAME
+            );
+    public static final UserRoleUpdateDto USER_ROLE_UPDATE_DTO = new UserRoleUpdateDto(NEW_ROLE);
+    public static final UserLoginRequestDto USER_LOGIN_REQUEST_DTO = new UserLoginRequestDto(
+            FIRST_USER_EMAIL,
+            USER_PASSWORD
+    );
+
+    public static final UserInfoUpdateDto USER_INFO_UPDATE_DTO = new UserInfoUpdateDto(
+            "UpdatedFirstName",
+            "UpdatedLastName"
+    );
+
+    public static final UserResponseDto USER_RESPONSE_DTO = new UserResponseDto(
+            FIRST_USER_ID,
+            FIRST_USER_EMAIL,
+            FIRST_USER_FIRST_NAME,
+            FIRST_USER_LAST_NAME
+    );
+
+    //Booking
     public static final CreateBookingRequestDto CREATE_BOOKING_REQUEST_DTO =
+            new CreateBookingRequestDto(
+                    CHECK_IN_DATE,
+                    CHECK_OUT_DATE,
+                    FIRST_ACCOMMODATION_ID
+            );
+
+    public static final CreateBookingRequestDto UPDATE_BOOKING_REQUEST_DTO =
             new CreateBookingRequestDto(
                     CHECK_IN_DATE,
                     CHECK_OUT_DATE,
@@ -232,56 +302,66 @@ public class TestUtil {
 
     public static final CreateBookingRequestDto INVALID_CREATE_BOOKING_REQUEST_DTO =
             new CreateBookingRequestDto(
-                    LocalDate.now(),
-                    LocalDate.now().plusDays(10),
+                    CHECK_IN_DATE,
+                    CHECK_OUT_DATE,
                     INVALID_ACCOMMODATION_ID
             );
 
     public static final Booking FIRST_BOOKING = new Booking();
 
-    static {
-        FIRST_BOOKING.setId(FIRST_BOOKING_ID);
-        FIRST_BOOKING.setCheckInDate(LocalDate.now());
-        FIRST_BOOKING.setCheckOutDate(LocalDate.now().plusDays(10));
-        FIRST_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
-        FIRST_BOOKING.setUser(FIRST_USER);
-        FIRST_BOOKING.setStatus(Booking.BookingStatus.PENDING);
-    }
+    //    static {
+    //        FIRST_BOOKING.setId(FIRST_BOOKING_ID);
+    //        FIRST_BOOKING.setCheckInDate(LocalDate.now());
+    //        FIRST_BOOKING.setCheckOutDate(LocalDate.now().plusDays(10));
+    //        FIRST_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
+    //        FIRST_BOOKING.setUser(FIRST_USER);
+    //        FIRST_BOOKING.setStatus(Booking.BookingStatus.PENDING);
+    //    }
 
     public static final Booking SECOND_BOOKING = new Booking();
 
-    static {
-        SECOND_BOOKING.setId(SECOND_BOOKING_ID);
-        SECOND_BOOKING.setCheckInDate(LocalDate.now());
-        SECOND_BOOKING.setCheckOutDate(LocalDate.now().plusDays(11));
-        SECOND_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
-        SECOND_BOOKING.setUser(FIRST_USER);
-        SECOND_BOOKING.setStatus(Booking.BookingStatus.PENDING);
-    }
+    //    static {
+    //        SECOND_BOOKING.setId(SECOND_BOOKING_ID);
+    //        SECOND_BOOKING.setCheckInDate(LocalDate.now());
+    //        SECOND_BOOKING.setCheckOutDate(LocalDate.now().plusDays(11));
+    //        SECOND_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
+    //        SECOND_BOOKING.setUser(FIRST_USER);
+    //        SECOND_BOOKING.setStatus(Booking.BookingStatus.PENDING);
+    //    }
 
     public static final BookingDto BOOKING_RESPONSE_DTO = new BookingDto(
             FIRST_BOOKING_ID,
-            LocalDate.now(),
-            LocalDate.now().plusDays(10),
+            CHECK_IN_DATE,
+            CHECK_OUT_DATE,
             FIRST_ACCOMMODATION_ID,
             Booking.BookingStatus.PENDING
     );
 
     public static final BookingDto CANCELLED_BOOKING_RESPONSE_DTO = new BookingDto(
             SECOND_BOOKING_ID,
-            LocalDate.now(),
-            LocalDate.now().plusDays(11),
+            CHECK_IN_DATE,
+            SECOND_CHECK_OUT_DATE,
             FIRST_ACCOMMODATION_ID,
             Booking.BookingStatus.CANCELED
     );
 
+    public static final BookingSearchParameters BOOKING_SEARCH_PARAMETERS =
+            new BookingSearchParameters(new String[]{"PENDING"}, new String[]{"1L"});
+
+    public static final Specification<Booking> BOOKING_SPECIFICATION =
+            (root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("status"), Booking.BookingStatus.PENDING);
+
+    //Pages
     public static final PageRequest PAGEABLE = PageRequest.of(0, 1);
     public static final Page<Booking> BOOKING_PAGE = new PageImpl<>(
             List.of(FIRST_BOOKING), PAGEABLE, 1
     );
-    public static final BookingSearchParameters BOOKING_SEARCH_PARAMETERS =
-            new BookingSearchParameters(new String[]{"PENDING"}, new String[]{"1L"});
+    public static final Page<Accommodation> ACCOMMODATION_PAGE = new PageImpl<>(
+            List.of(FIRST_ACCOMMODATION), PAGEABLE, 1
+    );
 
+    //Payments
     public static final CreatePaymentRequestDto CREATE_PAYMENT_REQUEST_DTO =
             new CreatePaymentRequestDto(
                     FIRST_BOOKING_ID
@@ -289,48 +369,48 @@ public class TestUtil {
 
     public static final Payment FIRST_PAYMENT = new Payment();
 
-    static {
-        FIRST_PAYMENT.setId(FIRST_PAYMENT_ID);
-        FIRST_PAYMENT.setBooking(FIRST_BOOKING);
-        FIRST_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
-        FIRST_PAYMENT.setSessionId(SESSION_ID);
-        try {
-            FIRST_PAYMENT.setSessionUrl(new URL(SESSION_URL));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        FIRST_PAYMENT.setStatus(PAYMENT_STATUS);
-    }
+    //    static {
+    //        FIRST_PAYMENT.setId(FIRST_PAYMENT_ID);
+    //        FIRST_PAYMENT.setBooking(FIRST_BOOKING);
+    //        FIRST_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
+    //        FIRST_PAYMENT.setSessionId(SESSION_ID);
+    //        try {
+    //            FIRST_PAYMENT.setSessionUrl(new URL(SESSION_URL));
+    //        } catch (MalformedURLException e) {
+    //            e.printStackTrace();
+    //        }
+    //        FIRST_PAYMENT.setStatus(PAYMENT_STATUS);
+    //    }
 
     public static final Payment SECOND_PAYMENT = new Payment();
 
-    static {
-        SECOND_PAYMENT.setId(SECOND_PAYMENT_ID);
-        SECOND_PAYMENT.setBooking(SECOND_BOOKING);
-        SECOND_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
-        SECOND_PAYMENT.setSessionId(SECOND_SESSION_ID);
-        try {
-            SECOND_PAYMENT.setSessionUrl(new URL(SESSION_URL));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        SECOND_PAYMENT.setStatus(PAYMENT_STATUS);
-    }
+    //    static {
+    //        SECOND_PAYMENT.setId(SECOND_PAYMENT_ID);
+    //        SECOND_PAYMENT.setBooking(SECOND_BOOKING);
+    //        SECOND_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
+    //        SECOND_PAYMENT.setSessionId(SECOND_SESSION_ID);
+    //        try {
+    //            SECOND_PAYMENT.setSessionUrl(new URL(SESSION_URL));
+    //        } catch (MalformedURLException e) {
+    //            e.printStackTrace();
+    //        }
+    //        SECOND_PAYMENT.setStatus(PAYMENT_STATUS);
+    //    }
 
     public static final Payment EXPIRED_PAYMENT = new Payment();
 
-    static {
-        EXPIRED_PAYMENT.setId(EXPIRED_PAYMENT_ID);
-        EXPIRED_PAYMENT.setBooking(SECOND_BOOKING);
-        EXPIRED_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
-        EXPIRED_PAYMENT.setSessionId(EXPIRED_SESSION_ID);
-        try {
-            EXPIRED_PAYMENT.setSessionUrl(new URL(SESSION_URL));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        EXPIRED_PAYMENT.setStatus(Payment.PaymentStatus.EXPIRED);
-    }
+    //    static {
+    //        EXPIRED_PAYMENT.setId(EXPIRED_PAYMENT_ID);
+    //        EXPIRED_PAYMENT.setBooking(SECOND_BOOKING);
+    //        EXPIRED_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
+    //        EXPIRED_PAYMENT.setSessionId(EXPIRED_SESSION_ID);
+    //        try {
+    //            EXPIRED_PAYMENT.setSessionUrl(new URL(SESSION_URL));
+    //        } catch (MalformedURLException e) {
+    //            e.printStackTrace();
+    //        }
+    //        EXPIRED_PAYMENT.setStatus(Payment.PaymentStatus.EXPIRED);
+    //    }
 
     public static final PaymentDto PAYMENT_RESPONSE_DTO = new PaymentDto(
             FIRST_PAYMENT_ID,
@@ -359,75 +439,13 @@ public class TestUtil {
         );
     }
 
-    public static final Session NEW_SESSION = new Session();
-    public static final Session RENEWED_SESSION = new Session();
-    public static final Session EXPIRED_SESSION = new Session();
-    public static final SessionListParams VALID_SESSION = SessionListParams.builder()
-            .setLimit(1L).build();
+    //Stripe
+    public static final DescriptionForStripeDto DESCRIPTION_FOR_STRIPE_DTO =
+            new DescriptionForStripeDto(FIRST_BOOKING.getId(), PAYMENT_AMOUNT,
+                    "Booking #" + FIRST_BOOKING.getId());
 
-    static {
-        // Ініціалізація NEW_SESSION
-        NEW_SESSION.setId("newSessionId");
-        NEW_SESSION.setStatus("active");
-        // Ініціалізація RENEWED_SESSION
-        RENEWED_SESSION.setId("renewedSessionId");
-        RENEWED_SESSION.setStatus("active");
-        // Ініціалізація EXPIRED_SESSION
-        EXPIRED_SESSION.setId("expiredSessionId");
-        EXPIRED_SESSION.setStatus("expired");
-    }
-
-    public static final Address INVALID_ADDRESS = new Address();
-
-    static {
-        INVALID_ADDRESS.setId(INVALID_ADDRESS_ID);
-        INVALID_ADDRESS.setCountry("Canada");
-        INVALID_ADDRESS.setCity("Toronto");
-        INVALID_ADDRESS.setState("Ontario");
-        INVALID_ADDRESS.setStreet("Bloor Street");
-        INVALID_ADDRESS.setHouseNumber("123");
-        INVALID_ADDRESS.setPostalCode("M6H 1M9");
-    }
-
-    public static final Specification<Booking> BOOKING_SPECIFICATION =
-            (root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("status"), Booking.BookingStatus.PENDING);
-
-    public static final CreateAddressRequestDto UPDATE_ADDRESS_REQUEST_DTO =
-            new CreateAddressRequestDto(
-                    "USA", "Chicago", "Illinois",
-                    "Cicero", "49th Ave", "60804"
-            );
-
-    public static final CreateAccommodationRequestDto UPDATE_ACCOMMODATION_REQUEST_DTO =
-            new CreateAccommodationRequestDto(
-                    "CONDO", UPDATE_ADDRESS_REQUEST_DTO, "Studio",
-                    List.of("pool", "electricity"), BigDecimal.valueOf(150.00), 1
-            );
-
-    public static final CreateAccommodationRequestDto INVALID_CREATE_ACCOMMODATION_REQUEST_DTO =
-            new CreateAccommodationRequestDto(
-                    "INVALID_TYPE", CREATE_ADDRESS_REQUEST_DTO, "Studio",
-                    List.of("pool", "electricity"), new BigDecimal("100.00"), 1);
-
-    public static final UserRoleUpdateDto UPDATE_ROLE_REQUEST_DTO = new UserRoleUpdateDto(
-            "ROLE_MANAGER"
-    );
-    public static final UserInfoUpdateDto UPDATE_USER_INFO_REQUEST_DTO = new UserInfoUpdateDto(
-            "UpdatedFirstName",
-            "UpdatedLastName"
-    );
-
-    public static final UserRegistrationRequestDto USER_REGISTRATION_REQUEST_DTO =
-            new UserRegistrationRequestDto(
-                    USER_EMAIL,
-                    USER_PASSWORD,
-                    USER_PASSWORD,
-                    USER_FIRST_NAME,
-                    USER_LAST_NAME
-            );
-    public static final UserLoginRequestDto USER_LOGIN_REQUEST_DTO = new UserLoginRequestDto(
-            FIRST_USER_EMAIL,
-            USER_PASSWORD
-    );
+    public static final ApiException API_EXCEPTION = new ApiException("Test exception",
+            null, null, 0, null);
+    public static final Session SESSION = new Session();
+    public static final SessionCollection SESSION_COLLECTION = new SessionCollection();
 }
