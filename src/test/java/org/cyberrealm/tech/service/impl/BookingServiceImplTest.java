@@ -1,30 +1,57 @@
 package org.cyberrealm.tech.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cyberrealm.tech.util.TestConstants.BOOKING_ENTITY_NOT_FOUND_EXCEPTION;
+import static org.cyberrealm.tech.util.TestConstants.ACCOMMODATION_STRING;
+import static org.cyberrealm.tech.util.TestConstants.BOOKING;
+import static org.cyberrealm.tech.util.TestConstants.BOOKING_PROCESSING_EXCEPTION_MESSAGE;
+import static org.cyberrealm.tech.util.TestConstants.CHECK_IN_DATE;
+import static org.cyberrealm.tech.util.TestConstants.CHECK_OUT_DATE;
 import static org.cyberrealm.tech.util.TestConstants.DAILY_RATE_23;
+import static org.cyberrealm.tech.util.TestConstants.ELECTRICITY;
+import static org.cyberrealm.tech.util.TestConstants.ENTITY_NOT_FOUND_EXCEPTION;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_CITY;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_COUNTRY;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_HOUSE_NUMBER;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_POSTAL_CODE;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STATE;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STREET;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_AVAILABILITY;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_EMAIL;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_FIRST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_EXCEPTION;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_LAST_NAME;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_PASSWORD;
+import static org.cyberrealm.tech.util.TestConstants.HAS_EXPIRED_MESSAGE;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.NEW_BOOKING_NOTIFICATION;
+import static org.cyberrealm.tech.util.TestConstants.POOL;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_BOOKING_ID;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_CHECK_OUT_DATE;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_EMAIL;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_FIRST_NAME;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_ID;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_LAST_NAME;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_PASSWORD;
 import static org.cyberrealm.tech.util.TestConstants.STUDIO;
 import static org.cyberrealm.tech.util.TestConstants.USER_WITH_PENDING_PAYMENTS_EXCEPTION;
+import static org.cyberrealm.tech.util.TestConstants.WIFI;
 import static org.cyberrealm.tech.util.TestUtil.AMENITIES;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_PAGE;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_RESPONSE_DTO;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_SEARCH_PARAMETERS;
 import static org.cyberrealm.tech.util.TestUtil.CANCELLED_BOOKING_RESPONSE_DTO;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_BOOKING_REQUEST_DTO;
+import static org.cyberrealm.tech.util.TestUtil.CUSTOMER_ROLE;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_ACCOMMODATION;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_BOOKING;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_USER;
 import static org.cyberrealm.tech.util.TestUtil.INVALID_CREATE_BOOKING_REQUEST_DTO;
+import static org.cyberrealm.tech.util.TestUtil.MANAGER_ROLE;
 import static org.cyberrealm.tech.util.TestUtil.PAGEABLE;
 import static org.cyberrealm.tech.util.TestUtil.SECOND_BOOKING;
 import static org.cyberrealm.tech.util.TestUtil.SECOND_USER;
@@ -37,6 +64,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.cyberrealm.tech.dto.booking.BookingDto;
 import org.cyberrealm.tech.dto.booking.CreateBookingRequestDto;
 import org.cyberrealm.tech.exception.BookingForbiddenException;
@@ -46,6 +74,7 @@ import org.cyberrealm.tech.mapper.BookingMapper;
 import org.cyberrealm.tech.mapper.impl.BookingMapperImpl;
 import org.cyberrealm.tech.model.Accommodation;
 import org.cyberrealm.tech.model.Booking;
+import org.cyberrealm.tech.model.Role;
 import org.cyberrealm.tech.repository.AccommodationRepository;
 import org.cyberrealm.tech.repository.PaymentRepository;
 import org.cyberrealm.tech.repository.booking.BookingRepository;
@@ -88,6 +117,35 @@ class BookingServiceImplTest {
 
     @BeforeEach
     void beforeEach() {
+        MANAGER_ROLE.setRole(Role.RoleName.ROLE_MANAGER);
+        CUSTOMER_ROLE.setRole(Role.RoleName.ROLE_CUSTOMER);
+
+        FIRST_USER.setId(FIRST_USER_ID);
+        FIRST_USER.setFirstName(FIRST_USER_FIRST_NAME);
+        FIRST_USER.setLastName(FIRST_USER_LAST_NAME);
+        FIRST_USER.setEmail(FIRST_USER_EMAIL);
+        FIRST_USER.setPassword(FIRST_USER_PASSWORD);
+        FIRST_USER.setRoles(Set.of(MANAGER_ROLE));
+
+        SECOND_USER.setId(SECOND_USER_ID);
+        SECOND_USER.setFirstName(SECOND_USER_FIRST_NAME);
+        SECOND_USER.setLastName(SECOND_USER_LAST_NAME);
+        SECOND_USER.setEmail(SECOND_USER_EMAIL);
+        SECOND_USER.setPassword(SECOND_USER_PASSWORD);
+        SECOND_USER.setRoles(Set.of(CUSTOMER_ROLE));
+
+        AMENITIES.add(POOL);
+        AMENITIES.add(ELECTRICITY);
+        AMENITIES.add(WIFI);
+
+        FIRST_ADDRESS.setId(FIRST_ADDRESS_ID);
+        FIRST_ADDRESS.setCountry(FIRST_ADDRESS_COUNTRY);
+        FIRST_ADDRESS.setCity(FIRST_ADDRESS_CITY);
+        FIRST_ADDRESS.setState(FIRST_ADDRESS_STATE);
+        FIRST_ADDRESS.setStreet(FIRST_ADDRESS_STREET);
+        FIRST_ADDRESS.setHouseNumber(FIRST_ADDRESS_HOUSE_NUMBER);
+        FIRST_ADDRESS.setPostalCode(FIRST_ADDRESS_POSTAL_CODE);
+
         FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
         FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
         FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
@@ -97,11 +155,18 @@ class BookingServiceImplTest {
         FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
 
         FIRST_BOOKING.setId(FIRST_BOOKING_ID);
-        FIRST_BOOKING.setCheckInDate(LocalDate.now());
-        FIRST_BOOKING.setCheckOutDate(LocalDate.now().plusDays(10));
+        FIRST_BOOKING.setCheckInDate(CHECK_IN_DATE);
+        FIRST_BOOKING.setCheckOutDate(CHECK_OUT_DATE);
         FIRST_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
         FIRST_BOOKING.setUser(FIRST_USER);
         FIRST_BOOKING.setStatus(Booking.BookingStatus.PENDING);
+
+        SECOND_BOOKING.setId(SECOND_BOOKING_ID);
+        SECOND_BOOKING.setCheckInDate(CHECK_IN_DATE);
+        SECOND_BOOKING.setCheckOutDate(SECOND_CHECK_OUT_DATE);
+        SECOND_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
+        SECOND_BOOKING.setUser(FIRST_USER);
+        SECOND_BOOKING.setStatus(Booking.BookingStatus.PENDING);
     }
 
     @Test
@@ -177,7 +242,7 @@ class BookingServiceImplTest {
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
                 bookingService.findBookingById(INVALID_BOOKING_ID, FIRST_USER));
         String actual = exception.getMessage();
-        String expected = String.format(BOOKING_ENTITY_NOT_FOUND_EXCEPTION, INVALID_BOOKING_ID);
+        String expected = String.format(ENTITY_NOT_FOUND_EXCEPTION, BOOKING, INVALID_BOOKING_ID);
         assertThat(actual).isEqualTo(expected);
         verify(bookingRepository, times(1)).findById(INVALID_BOOKING_ID);
     }
@@ -213,7 +278,8 @@ class BookingServiceImplTest {
                 bookingService.updateById(FIRST_USER, FIRST_BOOKING_ID,
                         INVALID_CREATE_BOOKING_REQUEST_DTO));
         String actual = exception.getMessage();
-        String expected = String.format(INVALID_ACCOMMODATION_EXCEPTION, INVALID_ACCOMMODATION_ID);
+        String expected = String.format(ENTITY_NOT_FOUND_EXCEPTION, ACCOMMODATION_STRING,
+                INVALID_ACCOMMODATION_ID);
         assertThat(actual).isEqualTo(expected);
         verify(bookingRepository, times(1)).findById(FIRST_BOOKING_ID);
     }
@@ -256,7 +322,7 @@ class BookingServiceImplTest {
         BookingProcessingException exception = assertThrows(BookingProcessingException.class, () ->
                 bookingService.save(CREATE_BOOKING_REQUEST_DTO, FIRST_USER));
         String actual = exception.getMessage();
-        String expected = "Accommodation is not available for the selected dates.";
+        String expected = BOOKING_PROCESSING_EXCEPTION_MESSAGE;
         assertThat(actual).isEqualTo(expected);
         verify(bookingRepository, times(1))
                 .countOverlappingBookings(FIRST_ACCOMMODATION_ID,
@@ -276,7 +342,7 @@ class BookingServiceImplTest {
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
                 bookingService.save(INVALID_CREATE_BOOKING_REQUEST_DTO, FIRST_USER));
         String actual = exception.getMessage();
-        String expected = String.format("Can't find accommodation by id: %s",
+        String expected = String.format(ENTITY_NOT_FOUND_EXCEPTION, ACCOMMODATION_STRING,
                 INVALID_ACCOMMODATION_ID);
         assertThat(actual).isEqualTo(expected);
         verify(accommodationRepository, times(1))
@@ -299,7 +365,6 @@ class BookingServiceImplTest {
                         Booking.BookingStatus.CANCELED);
         verify(bookingRepository, times(1)).save(FIRST_BOOKING);
         verify(notificationService, times(1)).sendNotification(
-                String.format("Booking with ID:%d has expired.", FIRST_BOOKING.getId()));
+                String.format(HAS_EXPIRED_MESSAGE, FIRST_BOOKING.getId()));
     }
-
 }
