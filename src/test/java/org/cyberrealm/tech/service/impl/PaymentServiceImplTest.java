@@ -1,21 +1,56 @@
 package org.cyberrealm.tech.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.cyberrealm.tech.util.TestConstants.AMOUNT_PAID_FIELD;
+import static org.cyberrealm.tech.util.TestConstants.CHECK_IN_DATE;
+import static org.cyberrealm.tech.util.TestConstants.CHECK_OUT_DATE;
+import static org.cyberrealm.tech.util.TestConstants.DAILY_RATE_23;
+import static org.cyberrealm.tech.util.TestConstants.ELECTRICITY;
+import static org.cyberrealm.tech.util.TestConstants.ENTITY_NOT_FOUND_BY_SESSION_ID;
+import static org.cyberrealm.tech.util.TestConstants.ENTITY_NOT_FOUND_EXCEPTION;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_CITY;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_COUNTRY;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_HOUSE_NUMBER;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_POSTAL_CODE;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STATE;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STREET;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_AVAILABILITY;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_PAYMENT_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_EMAIL;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_FIRST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_LAST_NAME;
+import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_PASSWORD;
+import static org.cyberrealm.tech.util.TestConstants.ID_FIELD;
 import static org.cyberrealm.tech.util.TestConstants.NUMBER_OF_DAYS;
 import static org.cyberrealm.tech.util.TestConstants.PAYMENT_AMOUNT;
+import static org.cyberrealm.tech.util.TestConstants.PAYMENT_STATUS;
+import static org.cyberrealm.tech.util.TestConstants.PAYMENT_STRING;
+import static org.cyberrealm.tech.util.TestConstants.POOL;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_BOOKING_ID;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_CHECK_OUT_DATE;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_PAYMENT_ID;
+import static org.cyberrealm.tech.util.TestConstants.SECOND_SESSION_ID;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_ID;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_URL;
+import static org.cyberrealm.tech.util.TestConstants.STUDIO;
+import static org.cyberrealm.tech.util.TestConstants.WIFI;
+import static org.cyberrealm.tech.util.TestUtil.AMENITIES;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_RESPONSE_DTO;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_PAYMENT_REQUEST_DTO;
+import static org.cyberrealm.tech.util.TestUtil.FIRST_ACCOMMODATION;
+import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_BOOKING;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_PAYMENT;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_USER;
+import static org.cyberrealm.tech.util.TestUtil.MANAGER_ROLE;
 import static org.cyberrealm.tech.util.TestUtil.PAID_PAYMENT_WITHOUT_SESSION_DTO;
 import static org.cyberrealm.tech.util.TestUtil.PAYMENT_RESPONSE_DTO;
 import static org.cyberrealm.tech.util.TestUtil.PAYMENT_WITHOUT_SESSION_DTO;
+import static org.cyberrealm.tech.util.TestUtil.SECOND_BOOKING;
 import static org.cyberrealm.tech.util.TestUtil.SECOND_PAYMENT;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,8 +61,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.stripe.model.checkout.Session;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.cyberrealm.tech.dto.booking.BookingDto;
 import org.cyberrealm.tech.dto.payment.PaymentDto;
 import org.cyberrealm.tech.dto.payment.PaymentWithoutSessionDto;
@@ -38,10 +76,14 @@ import org.cyberrealm.tech.mapper.BookingMapper;
 import org.cyberrealm.tech.mapper.PaymentMapper;
 import org.cyberrealm.tech.mapper.impl.BookingMapperImpl;
 import org.cyberrealm.tech.mapper.impl.PaymentMapperImpl;
+import org.cyberrealm.tech.model.Accommodation;
+import org.cyberrealm.tech.model.Booking;
 import org.cyberrealm.tech.model.Payment;
+import org.cyberrealm.tech.model.Role;
 import org.cyberrealm.tech.repository.PaymentRepository;
 import org.cyberrealm.tech.repository.booking.BookingRepository;
 import org.cyberrealm.tech.service.NotificationService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,6 +115,66 @@ class PaymentServiceImplTest {
     @InjectMocks
     private PaymentServiceImpl paymentService;
 
+    @BeforeEach
+    void setUp() throws MalformedURLException {
+        MANAGER_ROLE.setRole(Role.RoleName.ROLE_MANAGER);
+
+        FIRST_USER.setId(FIRST_USER_ID);
+        FIRST_USER.setFirstName(FIRST_USER_FIRST_NAME);
+        FIRST_USER.setLastName(FIRST_USER_LAST_NAME);
+        FIRST_USER.setEmail(FIRST_USER_EMAIL);
+        FIRST_USER.setPassword(FIRST_USER_PASSWORD);
+        FIRST_USER.setRoles(Set.of(MANAGER_ROLE));
+
+        AMENITIES.add(POOL);
+        AMENITIES.add(ELECTRICITY);
+        AMENITIES.add(WIFI);
+
+        FIRST_ADDRESS.setId(FIRST_ADDRESS_ID);
+        FIRST_ADDRESS.setCountry(FIRST_ADDRESS_COUNTRY);
+        FIRST_ADDRESS.setCity(FIRST_ADDRESS_CITY);
+        FIRST_ADDRESS.setState(FIRST_ADDRESS_STATE);
+        FIRST_ADDRESS.setStreet(FIRST_ADDRESS_STREET);
+        FIRST_ADDRESS.setHouseNumber(FIRST_ADDRESS_HOUSE_NUMBER);
+        FIRST_ADDRESS.setPostalCode(FIRST_ADDRESS_POSTAL_CODE);
+
+        FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
+        FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
+        FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
+        FIRST_ACCOMMODATION.setSize(STUDIO);
+        FIRST_ACCOMMODATION.setAmenities(AMENITIES);
+        FIRST_ACCOMMODATION.setDailyRate(DAILY_RATE_23);
+        FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
+
+        FIRST_BOOKING.setId(FIRST_BOOKING_ID);
+        FIRST_BOOKING.setCheckInDate(CHECK_IN_DATE);
+        FIRST_BOOKING.setCheckOutDate(CHECK_OUT_DATE);
+        FIRST_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
+        FIRST_BOOKING.setUser(FIRST_USER);
+        FIRST_BOOKING.setStatus(Booking.BookingStatus.PENDING);
+
+        SECOND_BOOKING.setId(SECOND_BOOKING_ID);
+        SECOND_BOOKING.setCheckInDate(CHECK_IN_DATE);
+        SECOND_BOOKING.setCheckOutDate(SECOND_CHECK_OUT_DATE);
+        SECOND_BOOKING.setAccommodation(FIRST_ACCOMMODATION);
+        SECOND_BOOKING.setUser(FIRST_USER);
+        SECOND_BOOKING.setStatus(Booking.BookingStatus.PENDING);
+
+        FIRST_PAYMENT.setId(FIRST_PAYMENT_ID);
+        FIRST_PAYMENT.setBooking(FIRST_BOOKING);
+        FIRST_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
+        FIRST_PAYMENT.setSessionId(SESSION_ID);
+        FIRST_PAYMENT.setSessionUrl(new URL(SESSION_URL));
+        FIRST_PAYMENT.setStatus(PAYMENT_STATUS);
+
+        SECOND_PAYMENT.setId(SECOND_PAYMENT_ID);
+        SECOND_PAYMENT.setBooking(SECOND_BOOKING);
+        SECOND_PAYMENT.setAmountToPay(PAYMENT_AMOUNT);
+        SECOND_PAYMENT.setSessionId(SECOND_SESSION_ID);
+        SECOND_PAYMENT.setSessionUrl(new URL(SESSION_URL));
+        SECOND_PAYMENT.setStatus(PAYMENT_STATUS);
+    }
+
     @Test
     @DisplayName("Create payment successfully")
     void createPayment_validRequestDto_returnsPaymentDto() {
@@ -90,7 +192,8 @@ class PaymentServiceImplTest {
         PaymentDto actual = paymentService.createPayment(CREATE_PAYMENT_REQUEST_DTO);
 
         PaymentDto expected = PAYMENT_RESPONSE_DTO;
-        assertThat(actual).usingRecursiveComparison().ignoringFields("id").isEqualTo(expected);
+        assertThat(actual).usingRecursiveComparison().ignoringFields(ID_FIELD)
+                .isEqualTo(expected);
         verify(bookingRepository, times(1)).findById(FIRST_BOOKING_ID);
         verify(stripeService, times(1)).createStripeSession(any(DescriptionForStripeDto.class));
         verify(paymentRepository, times(1)).save(any(Payment.class));
@@ -104,7 +207,7 @@ class PaymentServiceImplTest {
         PaymentWithoutSessionDto actual = paymentService.handleSuccessPayment(SESSION_ID);
 
         PaymentWithoutSessionDto expected = PAID_PAYMENT_WITHOUT_SESSION_DTO;
-        assertThat(actual).usingRecursiveComparison().ignoringFields("amountPaid")
+        assertThat(actual).usingRecursiveComparison().ignoringFields(AMOUNT_PAID_FIELD)
                 .isEqualTo(expected);
         assertThat(actual.amountPaid()).isEqualTo(PAYMENT_AMOUNT);
         verify(paymentRepository, times(1)).findBySessionId(SESSION_ID);
@@ -168,7 +271,7 @@ class PaymentServiceImplTest {
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
                 paymentService.handleSuccessPayment(SESSION_ID));
         String actual = exception.getMessage();
-        String expected = String.format("Can't find payment by session id:%s", SESSION_ID);
+        String expected = String.format(ENTITY_NOT_FOUND_BY_SESSION_ID, SESSION_ID);
         assertThat(actual).isEqualTo(expected);
         verify(paymentRepository, times(1)).findBySessionId(SESSION_ID);
     }
@@ -181,7 +284,8 @@ class PaymentServiceImplTest {
         PaymentProcessingException exception = assertThrows(PaymentProcessingException.class, () ->
                 paymentService.renewPaymentSession(FIRST_PAYMENT_ID, FIRST_USER));
         String actual = exception.getMessage();
-        String expected = String.format("Can't find payment by id:%d", FIRST_PAYMENT_ID);
+        String expected = String.format(ENTITY_NOT_FOUND_EXCEPTION, PAYMENT_STRING,
+                FIRST_PAYMENT_ID);
         assertThat(actual).isEqualTo(expected);
         verify(paymentRepository, times(1)).findById(FIRST_PAYMENT_ID);
     }

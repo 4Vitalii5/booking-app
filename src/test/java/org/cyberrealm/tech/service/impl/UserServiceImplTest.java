@@ -10,8 +10,12 @@ import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_LAST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_PASSWORD;
 import static org.cyberrealm.tech.util.TestConstants.NEW_FIRST_NAME;
 import static org.cyberrealm.tech.util.TestConstants.NEW_LAST_NAME;
-import static org.cyberrealm.tech.util.TestConstants.NEW_ROLE;
 import static org.cyberrealm.tech.util.TestUtil.CUSTOMER_ROLE;
+import static org.cyberrealm.tech.util.TestUtil.FIRST_USER;
+import static org.cyberrealm.tech.util.TestUtil.MANAGER_ROLE;
+import static org.cyberrealm.tech.util.TestUtil.USER_REGISTRATION_REQUEST_DTO;
+import static org.cyberrealm.tech.util.TestUtil.USER_RESPONSE_DTO;
+import static org.cyberrealm.tech.util.TestUtil.USER_ROLE_UPDATE_DTO;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -23,9 +27,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import org.cyberrealm.tech.dto.user.UserInfoUpdateDto;
-import org.cyberrealm.tech.dto.user.UserRegistrationRequestDto;
 import org.cyberrealm.tech.dto.user.UserResponseDto;
-import org.cyberrealm.tech.dto.user.UserRoleUpdateDto;
 import org.cyberrealm.tech.exception.EntityNotFoundException;
 import org.cyberrealm.tech.exception.RegistrationException;
 import org.cyberrealm.tech.mapper.UserMapper;
@@ -57,75 +59,50 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private User user;
-    private UserRegistrationRequestDto userRegistrationRequestDto;
-    private UserResponseDto userResponseDto;
-    private UserRoleUpdateDto userRoleUpdateDto;
-    private Role role;
-
     @BeforeEach
     void setUp() {
+        MANAGER_ROLE.setRole(Role.RoleName.ROLE_MANAGER);
+
         Set<Role> roles = new HashSet<>();
-        roles.add(CUSTOMER_ROLE);
+        roles.add(MANAGER_ROLE);
 
-        user = new User();
-        user.setId(FIRST_USER_ID);
-        user.setEmail(FIRST_USER_EMAIL);
-        user.setPassword(FIRST_USER_PASSWORD);
-        user.setFirstName(FIRST_USER_FIRST_NAME);
-        user.setLastName(FIRST_USER_LAST_NAME);
-        user.setRoles(roles);
-
-        userRegistrationRequestDto = new UserRegistrationRequestDto(
-                FIRST_USER_EMAIL,
-                FIRST_USER_PASSWORD,
-                FIRST_USER_PASSWORD,
-                FIRST_USER_FIRST_NAME,
-                FIRST_USER_LAST_NAME
-        );
-
-        userResponseDto = new UserResponseDto(
-                FIRST_USER_ID,
-                FIRST_USER_EMAIL,
-                FIRST_USER_FIRST_NAME,
-                FIRST_USER_LAST_NAME
-        );
-
-        userRoleUpdateDto = new UserRoleUpdateDto(NEW_ROLE);
-
-        role = new Role();
-        role.setRole(Role.RoleName.ROLE_CUSTOMER);
+        FIRST_USER.setId(FIRST_USER_ID);
+        FIRST_USER.setFirstName(FIRST_USER_FIRST_NAME);
+        FIRST_USER.setLastName(FIRST_USER_LAST_NAME);
+        FIRST_USER.setEmail(FIRST_USER_EMAIL);
+        FIRST_USER.setPassword(FIRST_USER_PASSWORD);
+        FIRST_USER.setRoles(roles);
     }
 
     @Test
     void register_validRequest_returnsUserResponse() throws RegistrationException {
-        when(userMapper.toModel(userRegistrationRequestDto)).thenReturn(user);
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
-        when(roleRepository.findByRole(DEFAULT_ROLE)).thenReturn(Optional.of(role));
-        when(passwordEncoder.encode(user.getPassword())).thenReturn(ENCODED_PASSWORD);
-        when(userRepository.save(user)).thenReturn(user);
+        when(userMapper.toModel(USER_REGISTRATION_REQUEST_DTO)).thenReturn(FIRST_USER);
+        when(userRepository.findByEmail(FIRST_USER.getEmail())).thenReturn(Optional.empty());
+        when(roleRepository.findByRole(DEFAULT_ROLE)).thenReturn(Optional.of(CUSTOMER_ROLE));
+        when(passwordEncoder.encode(FIRST_USER.getPassword())).thenReturn(ENCODED_PASSWORD);
+        when(userRepository.save(FIRST_USER)).thenReturn(FIRST_USER);
 
-        UserResponseDto actualResponse = userService.register(userRegistrationRequestDto);
+        UserResponseDto actualResponse = userService.register(USER_REGISTRATION_REQUEST_DTO);
 
-        assertThat(actualResponse).isEqualTo(userResponseDto);
-        verify(userMapper, times(1)).toModel(userRegistrationRequestDto);
-        verify(userRepository, times(1)).findByEmail(user.getEmail());
+        assertThat(actualResponse).isEqualTo(USER_RESPONSE_DTO);
+        verify(userMapper, times(1)).toModel(USER_REGISTRATION_REQUEST_DTO);
+        verify(userRepository, times(1)).findByEmail(FIRST_USER.getEmail());
         verify(roleRepository, times(1)).findByRole(Role.RoleName.ROLE_CUSTOMER);
         verify(passwordEncoder, times(1)).encode(FIRST_USER_PASSWORD);
-        verify(userRepository, times(1)).save(user);
-        verify(userMapper, times(1)).toUserResponse(user);
+        verify(userRepository, times(1)).save(FIRST_USER);
+        verify(userMapper, times(1)).toUserResponse(FIRST_USER);
     }
 
     @Test
     void register_existingEmail_throwsRegistrationException() {
-        when(userMapper.toModel(userRegistrationRequestDto)).thenReturn(user);
-        when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.of(user));
+        when(userMapper.toModel(USER_REGISTRATION_REQUEST_DTO)).thenReturn(FIRST_USER);
+        when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.of(FIRST_USER));
 
         assertThrows(RegistrationException.class, () ->
-                userService.register(userRegistrationRequestDto));
+                userService.register(USER_REGISTRATION_REQUEST_DTO));
 
-        verify(userMapper, times(1)).toModel(userRegistrationRequestDto);
-        verify(userRepository, times(1)).findByEmail(user.getEmail());
+        verify(userMapper, times(1)).toModel(USER_REGISTRATION_REQUEST_DTO);
+        verify(userRepository, times(1)).findByEmail(FIRST_USER.getEmail());
         verify(roleRepository, times(0)).findByRole(Role.RoleName.ROLE_CUSTOMER);
         verify(passwordEncoder, times(0)).encode(any(String.class));
         verify(userRepository, times(0)).save(any(User.class));
@@ -134,17 +111,18 @@ class UserServiceImplTest {
 
     @Test
     void update_validRequest_returnsUpdatedUserResponse() {
-        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
-        when(roleRepository.findByRole(any(Role.RoleName.class))).thenReturn(Optional.of(role));
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(FIRST_USER));
+        when(roleRepository.findByRole(any(Role.RoleName.class)))
+                .thenReturn(Optional.of(CUSTOMER_ROLE));
+        when(userRepository.save(any(User.class))).thenReturn(FIRST_USER);
 
-        UserResponseDto actualResponse = userService.update(FIRST_USER_ID, userRoleUpdateDto);
+        UserResponseDto actualResponse = userService.update(FIRST_USER_ID, USER_ROLE_UPDATE_DTO);
 
-        assertThat(actualResponse).isEqualTo(userResponseDto);
+        assertThat(actualResponse).isEqualTo(USER_RESPONSE_DTO);
         verify(userRepository, times(1)).findById(FIRST_USER_ID);
         verify(roleRepository, times(1)).findByRole(Role.RoleName.ROLE_MANAGER);
-        verify(userRepository, times(1)).save(user);
-        verify(userMapper, times(1)).toUserResponse(user);
+        verify(userRepository, times(1)).save(FIRST_USER);
+        verify(userMapper, times(1)).toUserResponse(FIRST_USER);
     }
 
     @Test
@@ -152,7 +130,7 @@ class UserServiceImplTest {
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userService.update(FIRST_USER_ID,
-                userRoleUpdateDto));
+                USER_ROLE_UPDATE_DTO));
 
         verify(userRepository, times(1)).findById(FIRST_USER_ID);
         verify(roleRepository, times(0)).findByRole(any(Role.RoleName.class));
@@ -162,13 +140,13 @@ class UserServiceImplTest {
 
     @Test
     void findById_existingUser_returnsUserResponse() {
-        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(FIRST_USER));
 
         UserResponseDto actualResponse = userService.findById(FIRST_USER_ID);
 
-        assertThat(actualResponse).isEqualTo(userResponseDto);
+        assertThat(actualResponse).isEqualTo(USER_RESPONSE_DTO);
         verify(userRepository, times(1)).findById(FIRST_USER_ID);
-        verify(userMapper, times(1)).toUserResponse(user);
+        verify(userMapper, times(1)).toUserResponse(FIRST_USER);
     }
 
     @Test
@@ -188,32 +166,32 @@ class UserServiceImplTest {
                 NEW_LAST_NAME
         );
 
-        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
-        doNothing().when(userMapper).updateUser(user, userInfoUpdateDto);
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(FIRST_USER));
+        doNothing().when(userMapper).updateUser(FIRST_USER, userInfoUpdateDto);
 
         UserResponseDto actualResponse = userService.updateUserById(FIRST_USER_ID,
                 userInfoUpdateDto);
 
-        assertThat(actualResponse).isEqualTo(userResponseDto);
+        assertThat(actualResponse).isEqualTo(USER_RESPONSE_DTO);
         verify(userRepository, times(1)).findById(FIRST_USER_ID);
-        verify(userMapper, times(1)).updateUser(user, userInfoUpdateDto);
-        verify(userMapper, times(1)).toUserResponse(user);
+        verify(userMapper, times(1)).updateUser(FIRST_USER, userInfoUpdateDto);
+        verify(userMapper, times(1)).toUserResponse(FIRST_USER);
     }
 
     @Test
     @DisplayName("Register should throw EntityNotFoundException when default role not found")
     void register_roleNotFound_throwsEntityNotFoundException() {
-        when(userMapper.toModel(userRegistrationRequestDto)).thenReturn(user);
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(userMapper.toModel(USER_REGISTRATION_REQUEST_DTO)).thenReturn(FIRST_USER);
+        when(userRepository.findByEmail(FIRST_USER.getEmail())).thenReturn(Optional.empty());
         when(roleRepository.findByRole(DEFAULT_ROLE)).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                userService.register(userRegistrationRequestDto));
+                userService.register(USER_REGISTRATION_REQUEST_DTO));
         String actual = exception.getMessage();
         String expected = "Role: ROLE_CUSTOMER not found";
         assertThat(actual).isEqualTo(expected);
-        verify(userMapper, times(1)).toModel(userRegistrationRequestDto);
-        verify(userRepository, times(1)).findByEmail(user.getEmail());
+        verify(userMapper, times(1)).toModel(USER_REGISTRATION_REQUEST_DTO);
+        verify(userRepository, times(1)).findByEmail(FIRST_USER.getEmail());
         verify(roleRepository, times(1)).findByRole(DEFAULT_ROLE);
         verify(passwordEncoder, times(0)).encode(any(String.class));
         verify(userRepository, times(0)).save(any(User.class));
@@ -223,17 +201,17 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Update should throw EntityNotFoundException when new role not found")
     void update_newRoleNotFound_throwsEntityNotFoundException() {
-        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(FIRST_USER));
         when(roleRepository.findByRole(any(Role.RoleName.class))).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                userService.update(FIRST_USER_ID, userRoleUpdateDto));
+                userService.update(FIRST_USER_ID, USER_ROLE_UPDATE_DTO));
         String actual = exception.getMessage();
-        String expected = "Role: " + userRoleUpdateDto.newRole() + " not found";
+        String expected = "Role: " + USER_ROLE_UPDATE_DTO.newRole() + " not found";
         assertThat(actual).isEqualTo(expected);
         verify(userRepository, times(1)).findById(FIRST_USER_ID);
         verify(roleRepository, times(1))
-                .findByRole(Role.RoleName.valueOf(userRoleUpdateDto.newRole()));
+                .findByRole(Role.RoleName.valueOf(USER_ROLE_UPDATE_DTO.newRole()));
         verify(userRepository, times(0)).save(any(User.class));
         verify(userMapper, times(0)).toUserResponse(any(User.class));
     }
@@ -262,11 +240,11 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Get user by ID should return correct userResponseDto")
     void getUserById_existingUser_returnsUserResponseDto() {
-        when(userRepository.findById(FIRST_USER_ID)).thenReturn(Optional.of(user));
+        when(userRepository.findById(FIRST_USER_ID)).thenReturn(Optional.of(FIRST_USER));
 
         UserResponseDto actual = userService.findById(FIRST_USER_ID);
 
-        assertThat(actual).isEqualTo(userResponseDto);
+        assertThat(actual).isEqualTo(USER_RESPONSE_DTO);
         verify(userRepository, times(1)).findById(FIRST_USER_ID);
     }
 

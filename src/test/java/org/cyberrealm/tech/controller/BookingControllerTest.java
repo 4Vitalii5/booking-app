@@ -1,15 +1,12 @@
 package org.cyberrealm.tech.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cyberrealm.tech.util.TestConstants.CHECK_IN_DATE;
-import static org.cyberrealm.tech.util.TestConstants.CHECK_OUT_DATE;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_EMAIL;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
-import static org.cyberrealm.tech.util.TestConstants.NEW_CHECK_IN_DATE;
-import static org.cyberrealm.tech.util.TestConstants.NEW_CHECK_OUT_DATE;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_EMAIL;
+import static org.cyberrealm.tech.util.TestUtil.CREATE_BOOKING_REQUEST_DTO;
+import static org.cyberrealm.tech.util.TestUtil.UPDATE_BOOKING_REQUEST_DTO;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,9 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cyberrealm.tech.dto.booking.BookingDto;
-import org.cyberrealm.tech.dto.booking.CreateBookingRequestDto;
 import org.cyberrealm.tech.model.Booking;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,23 +34,6 @@ public class BookingControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-
-    private CreateBookingRequestDto createBookingRequestDto;
-    private CreateBookingRequestDto updateBookingRequestDto;
-
-    @BeforeEach
-    void setUp() {
-        createBookingRequestDto = new CreateBookingRequestDto(
-                NEW_CHECK_IN_DATE,
-                NEW_CHECK_OUT_DATE,
-                FIRST_ACCOMMODATION_ID
-        );
-        updateBookingRequestDto = new CreateBookingRequestDto(
-                CHECK_IN_DATE,
-                CHECK_OUT_DATE,
-                FIRST_ACCOMMODATION_ID
-        );
-    }
 
     @Test
     @DisplayName("Verify creation of new booking")
@@ -80,7 +58,7 @@ public class BookingControllerTest {
         MvcResult mvcResult = mockMvc.perform(post("/bookings")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createBookingRequestDto)))
+                        .content(objectMapper.writeValueAsString(CREATE_BOOKING_REQUEST_DTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
         // Then
@@ -88,7 +66,7 @@ public class BookingControllerTest {
         BookingDto responseDto = objectMapper.readValue(jsonResponse, BookingDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.accommodationId())
-                .isEqualTo(createBookingRequestDto.accommodationId());
+                .isEqualTo(CREATE_BOOKING_REQUEST_DTO.accommodationId());
     }
 
     @Test
@@ -208,7 +186,7 @@ public class BookingControllerTest {
         MvcResult mvcResult = mockMvc.perform(put("/bookings/{id}", FIRST_BOOKING_ID)
                         .with(csrf())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(updateBookingRequestDto)))
+                        .content(objectMapper.writeValueAsString(UPDATE_BOOKING_REQUEST_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
         // Then
@@ -216,7 +194,7 @@ public class BookingControllerTest {
         BookingDto responseDto = objectMapper.readValue(jsonResponse, BookingDto.class);
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.accommodationId())
-                .isEqualTo(updateBookingRequestDto.accommodationId());
+                .isEqualTo(UPDATE_BOOKING_REQUEST_DTO.accommodationId());
     }
 
     @Test

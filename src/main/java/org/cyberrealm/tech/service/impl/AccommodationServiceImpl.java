@@ -73,7 +73,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     private Accommodation getAccommodationById(Long id) {
         return accommodationRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Can't find accommodation by id: " + id)
+                new EntityNotFoundException("Can't find accommodation by id:" + id)
         );
     }
 

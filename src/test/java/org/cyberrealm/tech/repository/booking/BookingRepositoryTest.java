@@ -1,6 +1,8 @@
 package org.cyberrealm.tech.repository.booking;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.cyberrealm.tech.util.TestConstants.CHECK_IN_DATE;
+import static org.cyberrealm.tech.util.TestConstants.CHECK_OUT_DATE;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
@@ -9,7 +11,6 @@ import static org.cyberrealm.tech.util.TestConstants.NUMBER_OF_DAYS;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_SPECIFICATION;
 import static org.cyberrealm.tech.util.TestUtil.PAGEABLE;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.cyberrealm.tech.model.Booking;
@@ -93,7 +94,7 @@ class BookingRepositoryTest {
     void countOverlappingBookings_withOverlappingDates_returnsCount() {
         // When
         int count = bookingRepository.countOverlappingBookings(FIRST_ACCOMMODATION_ID,
-                LocalDate.now().minusDays(1), LocalDate.now().plusDays(1));
+                CHECK_IN_DATE, CHECK_OUT_DATE);
         // Then
         assertThat(count).isGreaterThan(0);
     }
@@ -103,7 +104,7 @@ class BookingRepositoryTest {
     void findAllByCheckOutDateBeforeAndStatusNot_validData_returnsBookings() {
         // When
         List<Booking> bookings = bookingRepository.findAllByCheckOutDateBeforeAndStatusNot(
-                LocalDate.now().plusDays(1), Booking.BookingStatus.CANCELED
+                CHECK_OUT_DATE, Booking.BookingStatus.CANCELED
         );
         // Then
         assertThat(bookings).isNotEmpty();

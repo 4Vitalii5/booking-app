@@ -3,12 +3,12 @@ package org.cyberrealm.tech.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.cyberrealm.tech.util.TestConstants.AMOUNT_TO_PAY;
 import static org.cyberrealm.tech.util.TestConstants.EXPIRED_PAYMENT_ID;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_BOOKING_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_SESSION_ID;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_EMAIL;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_ID;
 import static org.cyberrealm.tech.util.TestUtil.BOOKING_RESPONSE_DTO;
+import static org.cyberrealm.tech.util.TestUtil.CREATE_PAYMENT_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.PAID_PAYMENT_WITHOUT_SESSION_DTO;
 import static org.cyberrealm.tech.util.TestUtil.PAYMENT_RESPONSE_DTO;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -19,10 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cyberrealm.tech.dto.booking.BookingDto;
-import org.cyberrealm.tech.dto.payment.CreatePaymentRequestDto;
 import org.cyberrealm.tech.dto.payment.PaymentDto;
 import org.cyberrealm.tech.dto.payment.PaymentWithoutSessionDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +38,6 @@ public class PaymentControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-
-    private CreatePaymentRequestDto createPaymentRequestDto;
-
-    @BeforeEach
-    void setUp() {
-        createPaymentRequestDto = new CreatePaymentRequestDto(
-                FIRST_BOOKING_ID
-        );
-    }
 
     @Test
     @DisplayName("Get users payment information")
@@ -109,7 +98,7 @@ public class PaymentControllerTest {
         MvcResult mvcResult = mockMvc.perform(post("/payments")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(createPaymentRequestDto)))
+                        .content(objectMapper.writeValueAsString(CREATE_PAYMENT_REQUEST_DTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
         // Then
