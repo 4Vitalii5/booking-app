@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_EMAIL;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_USER_EMAIL;
+import static org.cyberrealm.tech.util.TestUtil.USER_INFO_UPDATE_DTO;
+import static org.cyberrealm.tech.util.TestUtil.USER_ROLE_UPDATE_DTO;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -11,10 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cyberrealm.tech.dto.user.UserInfoUpdateDto;
 import org.cyberrealm.tech.dto.user.UserResponseDto;
-import org.cyberrealm.tech.dto.user.UserRoleUpdateDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,20 +46,6 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private UserRoleUpdateDto userRoleUpdateDto;
-    private UserInfoUpdateDto userInfoUpdateDto;
-
-    @BeforeEach
-    void setUp() {
-        userRoleUpdateDto = new UserRoleUpdateDto(
-                "ROLE_MANAGER"
-        );
-        userInfoUpdateDto = new UserInfoUpdateDto(
-                "UpdatedFirstName",
-                "UpdatedLastName"
-        );
-    }
-
     @Test
     @DisplayName("Update user roles")
     @WithUserDetails(value = SECOND_USER_EMAIL)
@@ -69,7 +54,7 @@ public class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform(post("/users/{id}/role", FIRST_USER_ID)
                         .with(csrf())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userRoleUpdateDto)))
+                        .content(objectMapper.writeValueAsString(USER_ROLE_UPDATE_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
         // Then
@@ -102,14 +87,14 @@ public class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform(patch("/users/me")
                         .with(csrf())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userInfoUpdateDto)))
+                        .content(objectMapper.writeValueAsString(USER_INFO_UPDATE_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         UserResponseDto responseDto = objectMapper.readValue(jsonResponse, UserResponseDto.class);
         assertThat(responseDto).isNotNull();
-        assertThat(responseDto.firstName()).isEqualTo(userInfoUpdateDto.firstName());
-        assertThat(responseDto.lastName()).isEqualTo(userInfoUpdateDto.lastName());
+        assertThat(responseDto.firstName()).isEqualTo(USER_INFO_UPDATE_DTO.firstName());
+        assertThat(responseDto.lastName()).isEqualTo(USER_INFO_UPDATE_DTO.lastName());
     }
 }
