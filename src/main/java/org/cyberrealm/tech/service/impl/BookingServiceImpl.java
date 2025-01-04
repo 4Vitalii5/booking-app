@@ -137,7 +137,7 @@ public class BookingServiceImpl implements BookingService {
 
     private Booking getBookingById(Long id) {
         return bookingRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Can't find booking by id: " + id)
+                new EntityNotFoundException("Can't find booking by id:" + id)
         );
     }
 
@@ -154,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
         );
 
         Accommodation accommodation = accommodationRepository.findById(requestDto.accommodationId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find accommodation by id: "
+                .orElseThrow(() -> new EntityNotFoundException("Can't find accommodation by id:"
                         + requestDto.accommodationId()));
 
         if (overlappingBookings >= accommodation.getAvailability()) {
