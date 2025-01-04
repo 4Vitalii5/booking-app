@@ -6,6 +6,6 @@ import org.cyberrealm.tech.model.Payment;
 public record PaymentWithoutSessionDto(
         Long bookingId,
         Payment.PaymentStatus status,
-        BigDecimal amountPaid
+        BigDecimal amount
 ) {
 }
