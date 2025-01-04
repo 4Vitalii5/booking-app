@@ -1,7 +1,7 @@
 package org.cyberrealm.tech.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cyberrealm.tech.util.TestConstants.AMOUNT_PAID_FIELD;
+import static org.cyberrealm.tech.util.TestConstants.AMOUNT_FIELD;
 import static org.cyberrealm.tech.util.TestConstants.CHECK_IN_DATE;
 import static org.cyberrealm.tech.util.TestConstants.CHECK_OUT_DATE;
 import static org.cyberrealm.tech.util.TestConstants.DAILY_RATE_23;
@@ -207,9 +207,9 @@ class PaymentServiceImplTest {
         PaymentWithoutSessionDto actual = paymentService.handleSuccessPayment(SESSION_ID);
 
         PaymentWithoutSessionDto expected = PAID_PAYMENT_WITHOUT_SESSION_DTO;
-        assertThat(actual).usingRecursiveComparison().ignoringFields(AMOUNT_PAID_FIELD)
+        assertThat(actual).usingRecursiveComparison().ignoringFields(AMOUNT_FIELD)
                 .isEqualTo(expected);
-        assertThat(actual.amountPaid()).isEqualTo(PAYMENT_AMOUNT);
+        assertThat(actual.amount()).isEqualTo(PAYMENT_AMOUNT);
         verify(paymentRepository, times(1)).findBySessionId(SESSION_ID);
         verify(paymentRepository, times(1)).save(any(Payment.class));
         verify(notificationService, times(1)).sendNotification(anyString());

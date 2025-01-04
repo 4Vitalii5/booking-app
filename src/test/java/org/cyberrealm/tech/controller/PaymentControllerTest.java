@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.cyberrealm.tech.util.TestConstants.AMOUNT_FIELD;
 import static org.cyberrealm.tech.util.TestConstants.AMOUNT_TO_PAY;
 import static org.cyberrealm.tech.util.TestConstants.EXPIRED_PAYMENT_ID;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_USER_ID;
@@ -143,10 +144,10 @@ public class PaymentControllerTest {
         PaymentWithoutSessionDto responseDto = objectMapper.readValue(jsonResponse,
                 PaymentWithoutSessionDto.class);
         assertThat(responseDto).isNotNull();
-        assertThat(responseDto).usingRecursiveComparison().ignoringFields("amountPaid")
+        assertThat(responseDto).usingRecursiveComparison().ignoringFields(AMOUNT_FIELD)
                 .isEqualTo(PAID_PAYMENT_WITHOUT_SESSION_DTO);
-        assertThat(responseDto.amountPaid())
-                .isEqualByComparingTo(PAID_PAYMENT_WITHOUT_SESSION_DTO.amountPaid());
+        assertThat(responseDto.amount())
+                .isEqualByComparingTo(PAID_PAYMENT_WITHOUT_SESSION_DTO.amount());
     }
 
     @Test

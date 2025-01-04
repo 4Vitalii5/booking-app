@@ -17,6 +17,6 @@ public interface PaymentMapper {
     Payment toEntity(CreatePaymentRequestDto requestDto);
 
     @Mapping(source = "booking.id", target = "bookingId")
-    @Mapping(source = "amountToPay", target = "amountPaid")
+    @Mapping(source = "amountToPay", target = "amount")
     PaymentWithoutSessionDto toDtoWithoutSession(Payment payment);
 }

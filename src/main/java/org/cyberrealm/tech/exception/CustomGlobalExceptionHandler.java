@@ -18,6 +18,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    @ExceptionHandler(BookingForbiddenException.class)
+    protected ResponseEntity<Object> handleBookingForbiddenException(
+            BookingForbiddenException exception, WebRequest request) {
+        Map<String, Object> body = getBody(
+                exception.getMessage(),
+                request.getDescription(false),
+                HttpStatus.FORBIDDEN
+        );
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(PaymentProcessingException.class)
     protected ResponseEntity<Object> handlePaymentProcessingException(
             PaymentProcessingException exception, WebRequest request) {
