@@ -108,7 +108,7 @@ public class TestConstants {
     public static final Payment.PaymentStatus PAYMENT_STATUS = Payment.PaymentStatus.PENDING;
     public static final String PENDING = "PENDING";
     public static final int NUMBER_OF_DAYS = 10;
-    public static final String AMOUNT_PAID_FIELD = "amountPaid";
+    public static final String AMOUNT_FIELD = "amount";
     public static final String ENTITY_NOT_FOUND_BY_SESSION_ID = "Can't find payment by session "
             + "id:%s";
     public static final String PAYMENT_STRING = "payment";
