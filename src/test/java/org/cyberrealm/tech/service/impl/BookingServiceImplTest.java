@@ -113,8 +113,6 @@ class BookingServiceImplTest {
     @InjectMocks
     private BookingServiceImpl bookingService;
 
-    private CreateBookingRequestDto createBookingRequestDto;
-
     @BeforeEach
     void beforeEach() {
         MANAGER_ROLE.setRole(Role.RoleName.ROLE_MANAGER);
