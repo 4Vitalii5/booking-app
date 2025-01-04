@@ -27,12 +27,14 @@ import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_STATE;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_STREET;
 import static org.cyberrealm.tech.util.TestConstants.STUDIO;
 import static org.cyberrealm.tech.util.TestConstants.WIFI;
+import static org.cyberrealm.tech.util.TestUtil.ACCOMMODATION_PAGE;
 import static org.cyberrealm.tech.util.TestUtil.ACCOMMODATION_RESPONSE_DTO;
 import static org.cyberrealm.tech.util.TestUtil.AMENITIES;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_ACCOMMODATION_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_ADDRESS_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_ACCOMMODATION;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
+import static org.cyberrealm.tech.util.TestUtil.PAGEABLE;
 import static org.cyberrealm.tech.util.TestUtil.SECOND_ADDRESS;
 import static org.cyberrealm.tech.util.TestUtil.SECOND_CREATE_ACCOMMODATION_REQUEST_DTO;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -63,10 +65,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class AccommodationServiceImplTest {
@@ -172,18 +170,16 @@ class AccommodationServiceImplTest {
     @DisplayName("Find all accommodations")
     void findAll_validPageable_returnsAllAccommodations() {
         //Given
-        Pageable pageable = PageRequest.of(0, 1);
-        Page<Accommodation> page = new PageImpl<>(List.of(FIRST_ACCOMMODATION), pageable, 1);
-        when(accommodationRepository.findAll(pageable)).thenReturn(page);
+        when(accommodationRepository.findAll(PAGEABLE)).thenReturn(ACCOMMODATION_PAGE);
 
         //When
-        List<AccommodationDto> actual = accommodationService.findAll(pageable);
+        List<AccommodationDto> actual = accommodationService.findAll(PAGEABLE);
 
         //Then
         AccommodationDto expected = ACCOMMODATION_RESPONSE_DTO;
         assertThat(actual).hasSize(1);
         assertThat(actual).containsExactly(expected);
-        verify(accommodationRepository, times(1)).findAll(pageable);
+        verify(accommodationRepository, times(1)).findAll(PAGEABLE);
     }
 
     @Test
