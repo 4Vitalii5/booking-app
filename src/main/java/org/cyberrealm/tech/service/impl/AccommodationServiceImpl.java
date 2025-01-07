@@ -94,7 +94,12 @@ public class AccommodationServiceImpl implements AccommodationService {
         return addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
                 requestDto.country(), requestDto.city(), requestDto.state(), requestDto.street(),
                 requestDto.houseNumber()
-        );
+        ).orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Can't find address %s,%s,%s,%s,%s,%s.",
+                                requestDto.country(), requestDto.city(), requestDto.state(),
+                                requestDto.street(), requestDto.houseNumber(),
+                                requestDto.postalCode())
+                ));
     }
 
     private void checkAddressAvailability(CreateAccommodationRequestDto requestDto,
