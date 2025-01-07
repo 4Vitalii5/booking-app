@@ -16,7 +16,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     boolean existsBySessionId(String sessionId);
 
-    @Query("SELECT COUNT(p) > 0 FROM Payment p WHERE p.booking.user.id = ?1 "
+    @Query("SELECT COUNT(p) > 0 FROM Payment p WHERE p.booking.user.id = :id "
             + "AND p.status = 'PENDING' "
             + "AND p.isDeleted = false")
     boolean existsPendingPaymentsByUserId(Long id);
