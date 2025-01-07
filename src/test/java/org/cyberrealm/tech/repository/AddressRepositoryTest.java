@@ -124,6 +124,6 @@ class AddressRepositoryTest {
                         INVALID_ADDRESS.getHouseNumber()
                 );
         // Then
-        assertThat(foundAddress).isNull();
+        assertThat(foundAddress).isEmpty();
     }
 }
