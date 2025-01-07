@@ -1,25 +1,11 @@
 package org.cyberrealm.tech.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_CITY;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_COUNTRY;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_HOUSE_NUMBER;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_ID;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_POSTAL_CODE;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STATE;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STREET;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_CITY;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_COUNTRY;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_HOUSE_NUMBER;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_ID;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_POSTAL_CODE;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_STATE;
-import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_STREET;
-import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
-import static org.cyberrealm.tech.util.TestUtil.INVALID_ADDRESS;
+import static org.cyberrealm.tech.util.TestUtil.getFirstAddress;
+import static org.cyberrealm.tech.util.TestUtil.getInvalidAddress;
 
+import java.util.Optional;
 import org.cyberrealm.tech.model.Address;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,36 +26,19 @@ class AddressRepositoryTest {
     @Autowired
     private AddressRepository addressRepository;
 
-    @BeforeAll
-    static void beforeAll() {
-        FIRST_ADDRESS.setId(FIRST_ADDRESS_ID);
-        FIRST_ADDRESS.setCountry(FIRST_ADDRESS_COUNTRY);
-        FIRST_ADDRESS.setCity(FIRST_ADDRESS_CITY);
-        FIRST_ADDRESS.setState(FIRST_ADDRESS_STATE);
-        FIRST_ADDRESS.setStreet(FIRST_ADDRESS_STREET);
-        FIRST_ADDRESS.setHouseNumber(FIRST_ADDRESS_HOUSE_NUMBER);
-        FIRST_ADDRESS.setPostalCode(FIRST_ADDRESS_POSTAL_CODE);
-
-        INVALID_ADDRESS.setId(INVALID_ADDRESS_ID);
-        INVALID_ADDRESS.setCountry(INVALID_ADDRESS_COUNTRY);
-        INVALID_ADDRESS.setCity(INVALID_ADDRESS_CITY);
-        INVALID_ADDRESS.setState(INVALID_ADDRESS_STATE);
-        INVALID_ADDRESS.setStreet(INVALID_ADDRESS_STREET);
-        INVALID_ADDRESS.setHouseNumber(INVALID_ADDRESS_HOUSE_NUMBER);
-        INVALID_ADDRESS.setPostalCode(INVALID_ADDRESS_POSTAL_CODE);
-    }
-
     @Test
     @DisplayName("Verify existsByCountryAndCityAndStateAndStreetAndHouseNumber() method works "
             + "with valid data")
     void existsByCountryAndCityAndStateAndStreetAndHouseNumber_validData_returnsTrue() {
+        //Given
+        Address address = getFirstAddress();
         // When
         boolean exists = addressRepository.existsByCountryAndCityAndStateAndStreetAndHouseNumber(
-                FIRST_ADDRESS.getCountry(),
-                FIRST_ADDRESS.getCity(),
-                FIRST_ADDRESS.getState(),
-                FIRST_ADDRESS.getStreet(),
-                FIRST_ADDRESS.getHouseNumber()
+                address.getCountry(),
+                address.getCity(),
+                address.getState(),
+                address.getStreet(),
+                address.getHouseNumber()
         );
         // Then
         assertThat(exists).isTrue();
@@ -79,13 +48,15 @@ class AddressRepositoryTest {
     @DisplayName("Verify existsByCountryAndCityAndStateAndStreetAndHouseNumber() method works "
             + "with invalid data")
     void existsByCountryAndCityAndStateAndStreetAndHouseNumber_invalidData_returnsFalse() {
+        //Given
+        Address invalidAddress = getInvalidAddress();
         // When
         boolean exists = addressRepository.existsByCountryAndCityAndStateAndStreetAndHouseNumber(
-                INVALID_ADDRESS.getCountry(),
-                INVALID_ADDRESS.getCity(),
-                INVALID_ADDRESS.getState(),
-                INVALID_ADDRESS.getStreet(),
-                INVALID_ADDRESS.getHouseNumber()
+                invalidAddress.getCountry(),
+                invalidAddress.getCity(),
+                invalidAddress.getState(),
+                invalidAddress.getStreet(),
+                invalidAddress.getHouseNumber()
         );
         // Then
         assertThat(exists).isFalse();
@@ -95,34 +66,38 @@ class AddressRepositoryTest {
     @DisplayName("Verify findByCountryAndCityAndStateAndStreetAndHouseNumber() method works "
             + "with valid data")
     void findByCountryAndCityAndStateAndStreetAndHouseNumber_validData_returnsAddress() {
+        // Given
+        Address expected = getFirstAddress();
         // When
-        Address foundAddress =
+        Optional<Address> actual =
                 addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
-                        FIRST_ADDRESS.getCountry(),
-                        FIRST_ADDRESS.getCity(),
-                        FIRST_ADDRESS.getState(),
-                        FIRST_ADDRESS.getStreet(),
-                        FIRST_ADDRESS.getHouseNumber()
+                        expected.getCountry(),
+                        expected.getCity(),
+                        expected.getState(),
+                        expected.getStreet(),
+                        expected.getHouseNumber()
                 );
         // Then
-        assertThat(foundAddress).isNotNull();
-        assertThat(foundAddress.getId()).isEqualTo(FIRST_ADDRESS.getId());
+        assertThat(actual).isNotNull();
+        assertThat(actual).usingRecursiveComparison().isEqualTo(Optional.of(expected));
     }
 
     @Test
     @DisplayName("Verify findByCountryAndCityAndStateAndStreetAndHouseNumber() method works "
             + "with invalid data")
     void findByCountryAndCityAndStateAndStreetAndHouseNumber_invalidData_returnsNull() {
+        //Given
+        Address invalidAddress = getInvalidAddress();
         // When
-        Address foundAddress =
+        Optional<Address> foundAddress =
                 addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
-                        INVALID_ADDRESS.getCountry(),
-                        INVALID_ADDRESS.getCity(),
-                        INVALID_ADDRESS.getState(),
-                        INVALID_ADDRESS.getStreet(),
-                        INVALID_ADDRESS.getHouseNumber()
+                        invalidAddress.getCountry(),
+                        invalidAddress.getCity(),
+                        invalidAddress.getState(),
+                        invalidAddress.getStreet(),
+                        invalidAddress.getHouseNumber()
                 );
         // Then
-        assertThat(foundAddress).isNull();
+        assertThat(foundAddress).isEmpty();
     }
 }

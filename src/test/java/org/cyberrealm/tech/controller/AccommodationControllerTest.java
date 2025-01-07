@@ -1,13 +1,9 @@
 package org.cyberrealm.tech.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cyberrealm.tech.util.TestConstants.ELECTRICITY;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_TYPE_VALUE;
-import static org.cyberrealm.tech.util.TestConstants.POOL;
-import static org.cyberrealm.tech.util.TestConstants.WIFI;
-import static org.cyberrealm.tech.util.TestUtil.AMENITIES;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_ACCOMMODATION_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.INVALID_CREATE_ACCOMMODATION_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.UPDATE_ACCOMMODATION_REQUEST_DTO;
@@ -20,7 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cyberrealm.tech.dto.accommodation.AccommodationDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +33,6 @@ public class AccommodationControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() {
-        AMENITIES.add(POOL);
-        AMENITIES.add(ELECTRICITY);
-        AMENITIES.add(WIFI);
-    }
 
     @Test
     @DisplayName("Verify creation of new accommodation")

@@ -4,39 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.cyberrealm.tech.util.TestConstants.ACCOMMODATION_STRING;
 import static org.cyberrealm.tech.util.TestConstants.ADDRESS_DUPLICATE_RESOURCE_EXCEPTION;
 import static org.cyberrealm.tech.util.TestConstants.BOOKED_ADDRESS_DUPLICATE_RESOURCE_EXCEPTION;
-import static org.cyberrealm.tech.util.TestConstants.DAILY_RATE_23;
-import static org.cyberrealm.tech.util.TestConstants.ELECTRICITY;
 import static org.cyberrealm.tech.util.TestConstants.ENTITY_NOT_FOUND_EXCEPTION;
 import static org.cyberrealm.tech.util.TestConstants.FIRST_ACCOMMODATION_ID;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_CITY;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_COUNTRY;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_HOUSE_NUMBER;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_ID;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_POSTAL_CODE;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STATE;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_ADDRESS_STREET;
-import static org.cyberrealm.tech.util.TestConstants.FIRST_AVAILABILITY;
 import static org.cyberrealm.tech.util.TestConstants.INVALID_ACCOMMODATION_ID;
-import static org.cyberrealm.tech.util.TestConstants.POOL;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_CITY;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_COUNTRY;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_HOUSE_NUMBER;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_ID;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_POSTAL_CODE;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_STATE;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_STREET;
-import static org.cyberrealm.tech.util.TestConstants.STUDIO;
-import static org.cyberrealm.tech.util.TestConstants.WIFI;
 import static org.cyberrealm.tech.util.TestUtil.ACCOMMODATION_PAGE;
 import static org.cyberrealm.tech.util.TestUtil.ACCOMMODATION_RESPONSE_DTO;
-import static org.cyberrealm.tech.util.TestUtil.AMENITIES;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_ACCOMMODATION_REQUEST_DTO;
 import static org.cyberrealm.tech.util.TestUtil.CREATE_ADDRESS_REQUEST_DTO;
-import static org.cyberrealm.tech.util.TestUtil.FIRST_ACCOMMODATION;
-import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
 import static org.cyberrealm.tech.util.TestUtil.PAGEABLE;
-import static org.cyberrealm.tech.util.TestUtil.SECOND_ADDRESS;
 import static org.cyberrealm.tech.util.TestUtil.SECOND_CREATE_ACCOMMODATION_REQUEST_DTO;
+import static org.cyberrealm.tech.util.TestUtil.getFirstAccommodation;
+import static org.cyberrealm.tech.util.TestUtil.getFirstAddress;
+import static org.cyberrealm.tech.util.TestUtil.getSecondAddress;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -54,10 +33,10 @@ import org.cyberrealm.tech.mapper.AddressMapper;
 import org.cyberrealm.tech.mapper.impl.AccommodationMapperImpl;
 import org.cyberrealm.tech.mapper.impl.AddressMapperImpl;
 import org.cyberrealm.tech.model.Accommodation;
+import org.cyberrealm.tech.model.Address;
 import org.cyberrealm.tech.repository.AccommodationRepository;
 import org.cyberrealm.tech.repository.AddressRepository;
 import org.cyberrealm.tech.service.NotificationService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,44 +60,14 @@ class AccommodationServiceImplTest {
     @InjectMocks
     private AccommodationServiceImpl accommodationService;
 
-    @BeforeEach
-    void setUp() {
-        AMENITIES.add(POOL);
-        AMENITIES.add(ELECTRICITY);
-        AMENITIES.add(WIFI);
-
-        FIRST_ADDRESS.setId(FIRST_ADDRESS_ID);
-        FIRST_ADDRESS.setCountry(FIRST_ADDRESS_COUNTRY);
-        FIRST_ADDRESS.setCity(FIRST_ADDRESS_CITY);
-        FIRST_ADDRESS.setState(FIRST_ADDRESS_STATE);
-        FIRST_ADDRESS.setStreet(FIRST_ADDRESS_STREET);
-        FIRST_ADDRESS.setHouseNumber(FIRST_ADDRESS_HOUSE_NUMBER);
-        FIRST_ADDRESS.setPostalCode(FIRST_ADDRESS_POSTAL_CODE);
-
-        SECOND_ADDRESS.setId(SECOND_ADDRESS_ID);
-        SECOND_ADDRESS.setCountry(SECOND_ADDRESS_COUNTRY);
-        SECOND_ADDRESS.setCity(SECOND_ADDRESS_CITY);
-        SECOND_ADDRESS.setState(SECOND_ADDRESS_STATE);
-        SECOND_ADDRESS.setStreet(SECOND_ADDRESS_STREET);
-        SECOND_ADDRESS.setHouseNumber(SECOND_ADDRESS_HOUSE_NUMBER);
-        SECOND_ADDRESS.setPostalCode(SECOND_ADDRESS_POSTAL_CODE);
-
-        FIRST_ACCOMMODATION.setId(FIRST_ACCOMMODATION_ID);
-        FIRST_ACCOMMODATION.setType(Accommodation.Type.HOUSE);
-        FIRST_ACCOMMODATION.setAddress(FIRST_ADDRESS);
-        FIRST_ACCOMMODATION.setSize(STUDIO);
-        FIRST_ACCOMMODATION.setAmenities(AMENITIES);
-        FIRST_ACCOMMODATION.setDailyRate(DAILY_RATE_23);
-        FIRST_ACCOMMODATION.setAvailability(FIRST_AVAILABILITY);
-    }
-
     @Test
     @DisplayName("Save a valid accommodation")
     void save_validCreateAccommodationRequestDto_returnsAccommodationDto() {
         //Given
+        Accommodation accommodation = getFirstAccommodation();
         when(accommodationMapper.toEntity(CREATE_ACCOMMODATION_REQUEST_DTO))
-                .thenReturn(FIRST_ACCOMMODATION);
-        when(accommodationRepository.save(FIRST_ACCOMMODATION)).thenReturn(FIRST_ACCOMMODATION);
+                .thenReturn(accommodation);
+        when(accommodationRepository.save(accommodation)).thenReturn(accommodation);
         when(addressRepository.existsByCountryAndCityAndStateAndStreetAndHouseNumber(
                 CREATE_ADDRESS_REQUEST_DTO.country(), CREATE_ADDRESS_REQUEST_DTO.city(),
                 CREATE_ADDRESS_REQUEST_DTO.state(), CREATE_ADDRESS_REQUEST_DTO.street(),
@@ -133,11 +82,11 @@ class AccommodationServiceImplTest {
                         CREATE_ADDRESS_REQUEST_DTO.country(), CREATE_ADDRESS_REQUEST_DTO.city(),
                         CREATE_ADDRESS_REQUEST_DTO.state(), CREATE_ADDRESS_REQUEST_DTO.street(),
                         CREATE_ADDRESS_REQUEST_DTO.houseNumber());
-        verify(accommodationRepository, times(1)).save(FIRST_ACCOMMODATION);
+        verify(accommodationRepository, times(1)).save(accommodation);
         verify(accommodationMapper, times(1))
                 .toEntity(CREATE_ACCOMMODATION_REQUEST_DTO);
         verify(notificationService, times(1))
-                .sendNotification("New booking created with ID:" + FIRST_ACCOMMODATION.getId());
+                .sendNotification("New booking created with ID:" + accommodation.getId());
     }
 
     @Test
@@ -186,8 +135,9 @@ class AccommodationServiceImplTest {
     @DisplayName("Find accommodation by ID")
     void findById_validId_returnsAccommodationDto() {
         //Given
+        Accommodation accommodation = getFirstAccommodation();
         when(accommodationRepository.findById(FIRST_ACCOMMODATION_ID))
-                .thenReturn(Optional.of(FIRST_ACCOMMODATION));
+                .thenReturn(Optional.of(accommodation));
 
         //When
         AccommodationDto actual = accommodationService.findById(FIRST_ACCOMMODATION_ID);
@@ -221,16 +171,18 @@ class AccommodationServiceImplTest {
     @DisplayName("Update accommodation by ID")
     void updateById_validIdAndRequestDto_returnsUpdatedAccommodationDto() {
         //Given
+        Accommodation accommodation = getFirstAccommodation();
+        Address address = getFirstAddress();
         when(addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
-                FIRST_ADDRESS.getCountry(),
-                FIRST_ADDRESS.getCity(),
-                FIRST_ADDRESS.getState(),
-                FIRST_ADDRESS.getStreet(),
-                FIRST_ADDRESS.getHouseNumber()
-        )).thenReturn(FIRST_ADDRESS);
+                address.getCountry(),
+                address.getCity(),
+                address.getState(),
+                address.getStreet(),
+                address.getHouseNumber()
+        )).thenReturn(Optional.of(address));
         when(accommodationRepository.findById(FIRST_ACCOMMODATION_ID))
-                .thenReturn(Optional.of(FIRST_ACCOMMODATION));
-        when(accommodationRepository.save(FIRST_ACCOMMODATION)).thenReturn(FIRST_ACCOMMODATION);
+                .thenReturn(Optional.of(accommodation));
+        when(accommodationRepository.save(accommodation)).thenReturn(accommodation);
 
         //When
         AccommodationDto actual = accommodationService.updateById(FIRST_ACCOMMODATION_ID,
@@ -241,7 +193,7 @@ class AccommodationServiceImplTest {
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
         verify(accommodationRepository, times(1))
                 .findById(FIRST_ACCOMMODATION_ID);
-        verify(accommodationRepository, times(1)).save(FIRST_ACCOMMODATION);
+        verify(accommodationRepository, times(1)).save(accommodation);
     }
 
     @Test
@@ -269,15 +221,17 @@ class AccommodationServiceImplTest {
     @DisplayName("Update accommodation with unavailable address")
     void updateById_invalidRequestDto_throwsDuplicateResourceException() {
         //Given
+        Accommodation accommodation = getFirstAccommodation();
+        Address address = getSecondAddress();
         when(accommodationRepository.findById(FIRST_ACCOMMODATION_ID))
-                .thenReturn(Optional.of(FIRST_ACCOMMODATION));
+                .thenReturn(Optional.of(accommodation));
         when(addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
-                SECOND_ADDRESS.getCountry(),
-                SECOND_ADDRESS.getCity(),
-                SECOND_ADDRESS.getState(),
-                SECOND_ADDRESS.getStreet(),
-                SECOND_ADDRESS.getHouseNumber()
-        )).thenReturn(SECOND_ADDRESS);
+                address.getCountry(),
+                address.getCity(),
+                address.getState(),
+                address.getStreet(),
+                address.getHouseNumber()
+        )).thenReturn(Optional.of(address));
 
         //When
         DuplicateResourceException exception = assertThrows(DuplicateResourceException.class, () ->
@@ -287,12 +241,12 @@ class AccommodationServiceImplTest {
 
         //Then
         String expected = String.format(BOOKED_ADDRESS_DUPLICATE_RESOURCE_EXCEPTION,
-                SECOND_ADDRESS.getCountry(),
-                SECOND_ADDRESS.getCity(),
-                SECOND_ADDRESS.getState(),
-                SECOND_ADDRESS.getStreet(),
-                SECOND_ADDRESS.getHouseNumber(),
-                SECOND_ADDRESS.getPostalCode());
+                address.getCountry(),
+                address.getCity(),
+                address.getState(),
+                address.getStreet(),
+                address.getHouseNumber(),
+                address.getPostalCode());
         assertThat(actual).isEqualTo(expected);
         verify(accommodationRepository, times(1))
                 .findById(FIRST_ACCOMMODATION_ID);

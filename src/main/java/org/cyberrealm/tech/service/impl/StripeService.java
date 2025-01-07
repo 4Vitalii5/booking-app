@@ -23,10 +23,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class StripeService {
-    public static final String SUCCESS_URL = "http://localhost:8080/api/payments/success/"
-            + "?sessionId={CHECKOUT_SESSION_ID}";
-    public static final String CANCEL_URL = "http://localhost:8080/api/payments/cancel/"
-            + "?sessionId={CHECKOUT_SESSION_ID}";
     public static final long DEFAULT_QUANTITY = 1L;
     public static final String DEFAULT_CURRENCY = "usd";
     public static final BigDecimal CENTS_AMOUNT = BigDecimal.valueOf(100);
@@ -34,6 +30,10 @@ public class StripeService {
     public static final String EXPIRED_STATUS = "expired";
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
+    @Value("${stripe.cancel.url}")
+    private String cancelUrl;
+    @Value("${stripe.success.url}")
+    private String successUrl;
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
@@ -45,8 +45,8 @@ public class StripeService {
     public Session createStripeSession(DescriptionForStripeDto stripeDto) {
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(SUCCESS_URL)
-                .setCancelUrl(CANCEL_URL)
+                .setSuccessUrl(successUrl)
+                .setCancelUrl(cancelUrl)
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(DEFAULT_QUANTITY)
