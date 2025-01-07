@@ -18,6 +18,7 @@ import static org.cyberrealm.tech.util.TestConstants.INVALID_ADDRESS_STREET;
 import static org.cyberrealm.tech.util.TestUtil.FIRST_ADDRESS;
 import static org.cyberrealm.tech.util.TestUtil.INVALID_ADDRESS;
 
+import java.util.Optional;
 import org.cyberrealm.tech.model.Address;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -96,7 +97,7 @@ class AddressRepositoryTest {
             + "with valid data")
     void findByCountryAndCityAndStateAndStreetAndHouseNumber_validData_returnsAddress() {
         // When
-        Address foundAddress =
+        Optional<Address> foundAddress =
                 addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
                         FIRST_ADDRESS.getCountry(),
                         FIRST_ADDRESS.getCity(),
@@ -106,7 +107,7 @@ class AddressRepositoryTest {
                 );
         // Then
         assertThat(foundAddress).isNotNull();
-        assertThat(foundAddress.getId()).isEqualTo(FIRST_ADDRESS.getId());
+        assertThat(foundAddress).usingRecursiveComparison().isEqualTo(Optional.of(FIRST_ADDRESS));
     }
 
     @Test
@@ -114,7 +115,7 @@ class AddressRepositoryTest {
             + "with invalid data")
     void findByCountryAndCityAndStateAndStreetAndHouseNumber_invalidData_returnsNull() {
         // When
-        Address foundAddress =
+        Optional<Address> foundAddress =
                 addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
                         INVALID_ADDRESS.getCountry(),
                         INVALID_ADDRESS.getCity(),
