@@ -92,6 +92,9 @@ public class TestConstants {
             + "payments and cannot create new " + BOOKING + ".";
     public static final String NEW_BOOKING_NOTIFICATION = "New " + BOOKING + " created with ID:%d";
     public static final String DUPLICATE_EMAIL_MESSAGE = "User with email: %s already exists";
+    public static final String ROLE_NOT_FOUND = "Role: %s not found";
+    public static final String ENTITY_NOT_FOUND_BY_SESSION_ID = "Can't find payment by session "
+            + "id:%s";
 
     // Payment
     public static final long FIRST_PAYMENT_ID = 1L;
@@ -109,11 +112,10 @@ public class TestConstants {
     public static final String PENDING = "PENDING";
     public static final int NUMBER_OF_DAYS = 10;
     public static final String AMOUNT_FIELD = "amount";
-    public static final String ENTITY_NOT_FOUND_BY_SESSION_ID = "Can't find payment by session "
-            + "id:%s";
     public static final String PAYMENT_STRING = "payment";
     public static final String ID_FIELD = "id";
     public static final String EXPIRED = "expired";
+    public static final String USER_STRING = "user";
 
     //Role
     public static final Role.RoleName FIRST_ROLE_NAME = Role.RoleName.ROLE_CUSTOMER;
