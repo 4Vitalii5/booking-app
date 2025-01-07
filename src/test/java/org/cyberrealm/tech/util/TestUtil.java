@@ -38,7 +38,6 @@ import static org.cyberrealm.tech.util.TestConstants.PAYMENT_AMOUNT;
 import static org.cyberrealm.tech.util.TestConstants.PAYMENT_STATUS;
 import static org.cyberrealm.tech.util.TestConstants.PENDING;
 import static org.cyberrealm.tech.util.TestConstants.POOL;
-import static org.cyberrealm.tech.util.TestConstants.SECOND_ACCOMMODATION_ID;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_CITY;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_COUNTRY;
 import static org.cyberrealm.tech.util.TestConstants.SECOND_ADDRESS_HOUSE_NUMBER;
@@ -326,34 +325,12 @@ public class TestUtil {
     }
 
     //Accommodations
-    public static Accommodation getFirstAccommodationFromDto() {
-        Accommodation accommodation = new Accommodation();
-        accommodation.setType(Accommodation.Type.HOUSE);
-        accommodation.setAddress(getFirstAddress());
-        accommodation.setSize(STUDIO);
-        accommodation.setAmenities(getAmenities());
-        accommodation.setDailyRate(DAILY_RATE_23);
-        accommodation.setAvailability(FIRST_AVAILABILITY);
-        return accommodation;
-    }
 
     public static Accommodation getFirstAccommodation() {
         Accommodation accommodation = new Accommodation();
         accommodation.setId(FIRST_ACCOMMODATION_ID);
         accommodation.setType(Accommodation.Type.HOUSE);
         accommodation.setAddress(getFirstAddress());
-        accommodation.setSize(STUDIO);
-        accommodation.setAmenities(getAmenities());
-        accommodation.setDailyRate(DAILY_RATE_23);
-        accommodation.setAvailability(FIRST_AVAILABILITY);
-        return accommodation;
-    }
-
-    public static Accommodation getSecondAccommodation() {
-        Accommodation accommodation = new Accommodation();
-        accommodation.setId(SECOND_ACCOMMODATION_ID);
-        accommodation.setType(Accommodation.Type.APARTMENT);
-        accommodation.setAddress(getSecondAddress());
         accommodation.setSize(STUDIO);
         accommodation.setAmenities(getAmenities());
         accommodation.setDailyRate(DAILY_RATE_23);
