@@ -10,14 +10,14 @@ In this project, we aim to revolutionize the housing rental experience by resolv
 
 ## Technologies and Tools Used
 
-- **Spring Boot**: To create a stand-alone, production-grade Spring-based application.
-- **Spring Security**: To handle authentication and authorization.
-- **Spring Data JPA**: For database operations.
-- **Swagger**: For API documentation.
-- **Liquibase**: For database schema changes.
-- **Docker**: To containerize the application.
-- **Stripe API**: For handling payments.
-- **Telegram API**: For sending notifications.
+- **Spring Boot v3.3.4**: To create a stand-alone, production-grade Spring-based application.
+- **Spring Security v3.3.4**: To handle authentication and authorization.
+- **Spring Data JPA v3.3.4**: For database operations.
+- **Swagger v2.1.0**: For API documentation.
+- **Liquibase v4.27.0**: For database schema changes.
+- **Docker v1.18.0**: To containerize the application.
+- **Stripe API v28.1.0**: For handling payments.
+- **Telegram API v6.7.0**: For sending notifications.
 
 ## Main Features
 ### Controllers and Functions:
