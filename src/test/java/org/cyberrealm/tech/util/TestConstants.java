@@ -33,7 +33,6 @@ public class TestConstants {
 
     //Accommodation
     public static final Long FIRST_ACCOMMODATION_ID = 1L;
-    public static final Long SECOND_ACCOMMODATION_ID = 2L;
     public static final Long INVALID_ACCOMMODATION_ID = 99999L;
     public static final String ACCOMMODATION_TYPE_HOUSE = "HOUSE";
     public static final String CONDO = "CONDO";
