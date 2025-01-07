@@ -227,7 +227,7 @@ class AccommodationServiceImplTest {
                 FIRST_ADDRESS.getState(),
                 FIRST_ADDRESS.getStreet(),
                 FIRST_ADDRESS.getHouseNumber()
-        )).thenReturn(FIRST_ADDRESS);
+        )).thenReturn(Optional.of(FIRST_ADDRESS));
         when(accommodationRepository.findById(FIRST_ACCOMMODATION_ID))
                 .thenReturn(Optional.of(FIRST_ACCOMMODATION));
         when(accommodationRepository.save(FIRST_ACCOMMODATION)).thenReturn(FIRST_ACCOMMODATION);
@@ -277,7 +277,7 @@ class AccommodationServiceImplTest {
                 SECOND_ADDRESS.getState(),
                 SECOND_ADDRESS.getStreet(),
                 SECOND_ADDRESS.getHouseNumber()
-        )).thenReturn(SECOND_ADDRESS);
+        )).thenReturn(Optional.of(SECOND_ADDRESS));
 
         //When
         DuplicateResourceException exception = assertThrows(DuplicateResourceException.class, () ->
