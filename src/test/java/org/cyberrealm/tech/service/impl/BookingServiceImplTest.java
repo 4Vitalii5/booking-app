@@ -66,7 +66,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.cyberrealm.tech.dto.booking.BookingDto;
-import org.cyberrealm.tech.dto.booking.CreateBookingRequestDto;
 import org.cyberrealm.tech.exception.BookingForbiddenException;
 import org.cyberrealm.tech.exception.BookingProcessingException;
 import org.cyberrealm.tech.exception.EntityNotFoundException;
