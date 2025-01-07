@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.repository;
 
+import java.util.Optional;
 import org.cyberrealm.tech.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,7 +9,7 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
             String country, String city, String state, String street, String houseNumber
     );
 
-    Address findByCountryAndCityAndStateAndStreetAndHouseNumber(
+    Optional<Address> findByCountryAndCityAndStateAndStreetAndHouseNumber(
             String country, String city, String state, String street, String houseNumber
     );
 }
