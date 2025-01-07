@@ -15,9 +15,10 @@ import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = {
-        "classpath:database/roles/add-role-customer.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "classpath:database/roles/remove-roles.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(scripts = "classpath:database/roles/add-role-customer.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = {
         "classpath:database/roles/remove-roles.sql"
 }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

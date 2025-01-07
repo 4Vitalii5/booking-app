@@ -34,6 +34,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Sql(scripts = "classpath:database/roles/remove-roles.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class PaymentControllerTest {
     @Autowired
     private MockMvc mockMvc;
