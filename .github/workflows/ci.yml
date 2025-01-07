@@ -16,3 +16,13 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots verify
+        env:
+          JWT_EXPIRATION=${{jwt.expiration}}
+          JWT_SECRET=${{jwt.secret}}
+          STRIPE_SECRET_KEY=${{stripe.secret.key}}
+          STRIPE_SUCCESS_URL=${{stripe.success.url}}
+          STRIPE_CANCEL_URL=${{stripe.cancel.url}}
+          TELEGRAM_BOT_TOKEN=${{telegram.bot.token}}
+          TELEGRAM_CHAT_ID=${{telegram.chat.id}}
+          POSTGRES_USER=${{spring.datasource.username}}
+          POSTGRES_ROOT_PASSWORD=${{spring.datasource.password}}
