@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.MvcResult;
         "classpath:database/accommodations/add-accommodations.sql",
         "classpath:database/users/add-users.sql",
         "classpath:database/users_roles/add-users_roles.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+})
 @Sql(scripts = {
         "classpath:database/accommodations/remove-accommodations.sql",
         "classpath:database/users/remove-users.sql",
@@ -59,6 +59,7 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(USER_ROLE_UPDATE_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         UserResponseDto responseDto = objectMapper.readValue(jsonResponse, UserResponseDto.class);
@@ -74,6 +75,7 @@ public class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform(get("/users/me"))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         UserResponseDto responseDto = objectMapper.readValue(jsonResponse, UserResponseDto.class);
@@ -92,6 +94,7 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(USER_INFO_UPDATE_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         UserResponseDto responseDto = objectMapper.readValue(jsonResponse, UserResponseDto.class);
