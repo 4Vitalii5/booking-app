@@ -46,7 +46,7 @@ public class BookingControllerTest {
             "classpath:database/accommodations/add-accommodations.sql",
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql",
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/bookings/remove-bookings.sql",
             "classpath:database/accommodations/remove-accommodations.sql",
@@ -63,6 +63,7 @@ public class BookingControllerTest {
                         .content(objectMapper.writeValueAsString(CREATE_BOOKING_REQUEST_DTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         BookingDto responseDto = objectMapper.readValue(jsonResponse, BookingDto.class);
@@ -81,7 +82,7 @@ public class BookingControllerTest {
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/bookings/remove-bookings.sql",
             "classpath:database/accommodations/remove-accommodations.sql",
@@ -97,6 +98,7 @@ public class BookingControllerTest {
                         .param("status", String.valueOf(Booking.BookingStatus.PENDING)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         BookingDto[] responseDtos = objectMapper.readValue(jsonResponse, BookingDto[].class);
@@ -113,7 +115,7 @@ public class BookingControllerTest {
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/bookings/remove-bookings.sql",
             "classpath:database/accommodations/remove-accommodations.sql",
@@ -127,6 +129,7 @@ public class BookingControllerTest {
         MvcResult mvcResult = mockMvc.perform(get("/bookings/my"))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         BookingDto[] responseDtos = objectMapper.readValue(jsonResponse, BookingDto[].class);
@@ -143,7 +146,7 @@ public class BookingControllerTest {
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/bookings/remove-bookings.sql",
             "classpath:database/accommodations/remove-accommodations.sql",
@@ -157,6 +160,7 @@ public class BookingControllerTest {
         MvcResult mvcResult = mockMvc.perform(get("/bookings/{id}", FIRST_BOOKING_ID))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         BookingDto responseDto = objectMapper.readValue(jsonResponse, BookingDto.class);
@@ -174,7 +178,7 @@ public class BookingControllerTest {
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/bookings/remove-bookings.sql",
             "classpath:database/accommodations/remove-accommodations.sql",
@@ -191,6 +195,7 @@ public class BookingControllerTest {
                         .content(objectMapper.writeValueAsString(UPDATE_BOOKING_REQUEST_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         BookingDto responseDto = objectMapper.readValue(jsonResponse, BookingDto.class);
@@ -209,7 +214,7 @@ public class BookingControllerTest {
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/bookings/remove-bookings.sql",
             "classpath:database/accommodations/remove-accommodations.sql",
@@ -224,6 +229,7 @@ public class BookingControllerTest {
                         .with(csrf()))
                 .andExpect(status().isNoContent())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         BookingDto responseDto = objectMapper.readValue(jsonResponse, BookingDto.class);
