@@ -1,7 +1,9 @@
 package org.cyberrealm.tech.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.cyberrealm.tech.util.TestConstants.CANNOT_CREATE_SESSION;
 import static org.cyberrealm.tech.util.TestConstants.EXPIRED;
+import static org.cyberrealm.tech.util.TestConstants.EXPIRED_STRIPE_SESSIONS;
 import static org.cyberrealm.tech.util.TestConstants.NOT_FOUND_EXPIRED_PAYMENTS;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_ID;
 import static org.cyberrealm.tech.util.TestUtil.API_EXCEPTION;
@@ -73,12 +75,12 @@ class StripeServiceTest {
                     .thenThrow(API_EXCEPTION);
 
             //When
-            StripeProcessingException exception = assertThrows(StripeProcessingException.class, () ->
-                    stripeService.createStripeSession(DESCRIPTION_FOR_STRIPE_DTO));
+            StripeProcessingException exception = assertThrows(StripeProcessingException.class,
+                    () -> stripeService.createStripeSession(DESCRIPTION_FOR_STRIPE_DTO));
             String actual = exception.getMessage();
 
             //Then
-            String expected = API_EXCEPTION.getMessage();
+            String expected = CANNOT_CREATE_SESSION;
             assertThat(actual).isEqualTo(expected);
             mockedSession.verify(() -> Session.create(any(SessionCreateParams.class)),
                     times(1));
@@ -159,12 +161,12 @@ class StripeServiceTest {
                     .thenThrow(API_EXCEPTION);
 
             //When
-            StripeProcessingException exception = assertThrows(StripeProcessingException.class, () ->
-                    stripeService.checkExpiredSession());
+            StripeProcessingException exception = assertThrows(StripeProcessingException.class,
+                    () -> stripeService.checkExpiredSession());
             String actual = exception.getMessage();
 
             //Then
-            String expected = API_EXCEPTION.getMessage();
+            String expected = EXPIRED_STRIPE_SESSIONS;
             assertThat(actual).isEqualTo(expected);
         }
     }
