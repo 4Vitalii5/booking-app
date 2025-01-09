@@ -62,22 +62,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PaymentServiceImplTest {
     @Mock
     private StripeService stripeService;
-
     @Mock
     private PaymentRepository paymentRepository;
-
     @Spy
     private PaymentMapper paymentMapper = new PaymentMapperImpl();
-
     @Spy
     private BookingMapper bookingMapper = new BookingMapperImpl();
-
     @Mock
     private BookingRepository bookingRepository;
-
     @Mock
     private NotificationService notificationService;
-
     @InjectMocks
     private PaymentServiceImpl paymentService;
 
@@ -88,10 +82,8 @@ class PaymentServiceImplTest {
         Booking booking = getFirstBooking();
         Payment payment = getFirstPayment();
         Session mockSession = mock(Session.class);
-        when(bookingRepository.findById(FIRST_BOOKING_ID))
-                .thenReturn(Optional.of(booking));
-        when(bookingRepository.numberOfDays(FIRST_BOOKING_ID))
-                .thenReturn(NUMBER_OF_DAYS);
+        when(bookingRepository.findById(FIRST_BOOKING_ID)).thenReturn(Optional.of(booking));
+        when(bookingRepository.numberOfDays(FIRST_BOOKING_ID)).thenReturn(NUMBER_OF_DAYS);
         when(mockSession.getUrl()).thenReturn(SESSION_URL);
         when(mockSession.getId()).thenReturn(SESSION_ID);
         when(stripeService.createStripeSession(any(DescriptionForStripeDto.class)))
@@ -103,8 +95,7 @@ class PaymentServiceImplTest {
 
         //Then
         PaymentDto expected = PAYMENT_RESPONSE_DTO;
-        assertThat(actual).usingRecursiveComparison().ignoringFields(ID_FIELD)
-                .isEqualTo(expected);
+        assertThat(actual).usingRecursiveComparison().ignoringFields(ID_FIELD).isEqualTo(expected);
         verify(bookingRepository, times(1)).findById(FIRST_BOOKING_ID);
         verify(stripeService, times(1)).createStripeSession(any(DescriptionForStripeDto.class));
         verify(paymentRepository, times(1)).save(any(Payment.class));
@@ -181,8 +172,7 @@ class PaymentServiceImplTest {
         Payment payment = getFirstPayment();
         Booking booking = getFirstBooking();
         User user = getFirstUser();
-        when(paymentRepository.findByBookingId(FIRST_BOOKING_ID))
-                .thenReturn(Optional.of(payment));
+        when(paymentRepository.findByBookingId(FIRST_BOOKING_ID)).thenReturn(Optional.of(payment));
         when(bookingRepository.findAllByUserId(FIRST_USER_ID)).thenReturn(List.of(booking));
 
         //When
