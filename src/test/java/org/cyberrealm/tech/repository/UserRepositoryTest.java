@@ -23,7 +23,7 @@ import org.springframework.test.context.jdbc.Sql;
         "classpath:database/roles/add-roles.sql",
         "classpath:database/users/add-users.sql",
         "classpath:database/users_roles/add-users_roles.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+})
 @Sql(scripts = {
         "classpath:database/users_roles/remove-users_roles.sql",
         "classpath:database/users/remove-users.sql",
@@ -38,6 +38,7 @@ class UserRepositoryTest {
     void findById_validId_returnsUser() {
         // When
         Optional<User> foundUser = userRepository.findById(FIRST_USER_ID);
+
         // Then
         assertThat(foundUser).isPresent();
         assertThat(foundUser.get().getId()).isEqualTo(FIRST_USER_ID);
@@ -48,6 +49,7 @@ class UserRepositoryTest {
     void findById_invalidId_returnsEmpty() {
         // When
         Optional<User> foundUser = userRepository.findById(INVALID_USER_ID);
+
         // Then
         assertThat(foundUser).isEmpty();
     }
@@ -57,6 +59,7 @@ class UserRepositoryTest {
     void findByEmail_validEmail_returnsUser() {
         // When
         Optional<User> foundUser = userRepository.findByEmail(FIRST_USER_EMAIL);
+
         // Then
         assertThat(foundUser).isPresent();
         assertThat(foundUser.get().getEmail()).isEqualTo(FIRST_USER_EMAIL);
@@ -67,6 +70,7 @@ class UserRepositoryTest {
     void findByEmail_invalidEmail_returnsEmpty() {
         // When
         Optional<User> foundUser = userRepository.findByEmail(INVALID_USER_EMAIL);
+
         // Then
         assertThat(foundUser).isEmpty();
     }
