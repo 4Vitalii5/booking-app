@@ -44,8 +44,7 @@ public class BookingServiceImpl implements BookingService {
         validateAccommodationAvailability(requestDto);
         if (paymentRepository.existsPendingPaymentsByUserId(user.getId())) {
             throw new BookingForbiddenException("User with id:" + user.getId()
-                    + " has pending payments and cannot create "
-                    + "new booking.");
+                    + " has pending payments and cannot create new booking.");
         }
         Booking booking = bookingMapper.toEntity(requestDto);
         booking.setUser(user);
@@ -95,8 +94,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = getBookingById(id);
         ensureBookingAccess(currentUser, booking);
         if (booking.getStatus() == Booking.BookingStatus.CANCELED) {
-            throw new BookingProcessingException("Booking with id:" + id
-                    + " already cancelled");
+            throw new BookingProcessingException("Booking with id:" + id + " already cancelled");
         }
         booking.setStatus(Booking.BookingStatus.CANCELED);
         bookingRepository.save(booking);
