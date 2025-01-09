@@ -94,6 +94,8 @@ public class TestConstants {
     public static final String ROLE_NOT_FOUND = "Role: %s not found";
     public static final String ENTITY_NOT_FOUND_BY_SESSION_ID = "Can't find payment by session "
             + "id:%s";
+    public static final String NOT_FOUND_EXPIRED_PAYMENTS = "Cannot renew session for payment with "
+            + "id:%d. Which has not expired.";
 
     // Payment
     public static final long FIRST_PAYMENT_ID = 1L;
