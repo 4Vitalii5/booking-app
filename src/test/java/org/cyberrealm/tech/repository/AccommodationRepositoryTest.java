@@ -20,7 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 @Sql(scripts = {
         "classpath:database/addresses/add-addresses.sql",
         "classpath:database/accommodations/add-accommodations.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+})
 @Sql(scripts = {
         "classpath:database/accommodations/remove-accommodations.sql",
         "classpath:database/addresses/remove-addresses.sql"
@@ -34,8 +34,8 @@ class AccommodationRepositoryTest {
     void findById_validId_returnsAccommodation() {
         // When
         Optional<Accommodation> foundAccommodation = accommodationRepository.findById(
-                FIRST_ACCOMMODATION_ID
-        );
+                FIRST_ACCOMMODATION_ID);
+
         // Then
         assertThat(foundAccommodation).isPresent();
         assertThat(foundAccommodation.get().getId()).isEqualTo(FIRST_ACCOMMODATION_ID);
@@ -46,8 +46,8 @@ class AccommodationRepositoryTest {
     void findById_invalidId_returnsEmpty() {
         // When
         Optional<Accommodation> foundAccommodation = accommodationRepository.findById(
-                INVALID_ACCOMMODATION_ID
-        );
+                INVALID_ACCOMMODATION_ID);
+
         // Then
         assertThat(foundAccommodation).isEmpty();
     }
@@ -57,6 +57,7 @@ class AccommodationRepositoryTest {
     void findAll_pageable_returnsAccommodationsPage() {
         // When
         Page<Accommodation> accommodationPage = accommodationRepository.findAll(PAGEABLE);
+
         // Then
         assertThat(accommodationPage.getContent()).isNotEmpty();
         assertThat(accommodationPage.getContent().get(0).getId())

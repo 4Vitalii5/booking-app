@@ -53,7 +53,7 @@ public class PaymentControllerTest {
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql",
             "classpath:database/payments/add-payments.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/payments/remove-payments.sql",
             "classpath:database/bookings/remove-bookings.sql",
@@ -69,6 +69,7 @@ public class PaymentControllerTest {
                         .param("userId", String.valueOf(FIRST_USER_ID)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         PaymentWithoutSessionDto[] responseDtos = objectMapper.readValue(jsonResponse,
@@ -86,7 +87,7 @@ public class PaymentControllerTest {
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql",
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/payments/remove-payments.sql",
             "classpath:database/bookings/remove-bookings.sql",
@@ -104,6 +105,7 @@ public class PaymentControllerTest {
                         .content(objectMapper.writeValueAsString(CREATE_PAYMENT_REQUEST_DTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         PaymentDto responseDto = objectMapper.readValue(jsonResponse, PaymentDto.class);
@@ -125,7 +127,7 @@ public class PaymentControllerTest {
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql",
             "classpath:database/payments/add-payments.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/payments/remove-payments.sql",
             "classpath:database/bookings/remove-bookings.sql",
@@ -141,6 +143,7 @@ public class PaymentControllerTest {
                         .param("sessionId", SECOND_SESSION_ID))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         PaymentWithoutSessionDto responseDto = objectMapper.readValue(jsonResponse,
@@ -163,7 +166,7 @@ public class PaymentControllerTest {
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql",
             "classpath:database/payments/add-payments.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/payments/remove-payments.sql",
             "classpath:database/bookings/remove-bookings.sql",
@@ -179,6 +182,7 @@ public class PaymentControllerTest {
                         .param("sessionId", SESSION_ID))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         BookingDto responseDto = objectMapper.readValue(jsonResponse, BookingDto.class);
@@ -197,7 +201,7 @@ public class PaymentControllerTest {
             "classpath:database/users_roles/add-users_roles.sql",
             "classpath:database/bookings/add-bookings.sql",
             "classpath:database/payments/add-payments.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/payments/remove-payments.sql",
             "classpath:database/bookings/remove-bookings.sql",
@@ -214,6 +218,7 @@ public class PaymentControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         PaymentDto responseDto = objectMapper.readValue(jsonResponse, PaymentDto.class);

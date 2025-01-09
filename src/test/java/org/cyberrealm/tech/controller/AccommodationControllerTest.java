@@ -53,6 +53,7 @@ public class AccommodationControllerTest {
                         .content(objectMapper.writeValueAsString(CREATE_ACCOMMODATION_REQUEST_DTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         AccommodationDto responseDto = objectMapper.readValue(jsonResponse, AccommodationDto.class);
@@ -76,6 +77,7 @@ public class AccommodationControllerTest {
         MvcResult mvcResult = mockMvc.perform(get("/accommodations"))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         AccommodationDto[] responseDtos = objectMapper.readValue(jsonResponse,
@@ -100,6 +102,7 @@ public class AccommodationControllerTest {
                         FIRST_ACCOMMODATION_ID))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         AccommodationDto responseDto = objectMapper.readValue(jsonResponse, AccommodationDto.class);
@@ -119,7 +122,6 @@ public class AccommodationControllerTest {
             "classpath:database/addresses/remove-addresses.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void getAccommodationById_withInvalidId_returnsNotFound() throws Exception {
-        // When
         mockMvc.perform(get("/accommodations/{id}", INVALID_ACCOMMODATION_ID))
                 .andExpect(status().isNotFound());
     }
@@ -144,6 +146,7 @@ public class AccommodationControllerTest {
                         .content(objectMapper.writeValueAsString(UPDATE_ACCOMMODATION_REQUEST_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         AccommodationDto responseDto = objectMapper.readValue(jsonResponse, AccommodationDto.class);
@@ -163,7 +166,6 @@ public class AccommodationControllerTest {
             "classpath:database/addresses/remove-addresses.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void updateAccommodation_withInvalidId_returnsNotFound() throws Exception {
-        // When
         mockMvc.perform(put("/accommodations/{id}", INVALID_ACCOMMODATION_ID)
                         .with(csrf())
                         .contentType("application/json")
@@ -187,6 +189,7 @@ public class AccommodationControllerTest {
         mockMvc.perform(delete("/accommodations/{id}", FIRST_ACCOMMODATION_ID)
                         .with(csrf()))
                 .andExpect(status().isNoContent());
+
         // Then
         mockMvc.perform(get("/accommodations/{id}", FIRST_ACCOMMODATION_ID))
                 .andExpect(status().isNotFound());
@@ -213,6 +216,7 @@ public class AccommodationControllerTest {
                         )))
                 .andExpect(status().isBadRequest())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         assertThat(jsonResponse).contains(INVALID_TYPE_VALUE);

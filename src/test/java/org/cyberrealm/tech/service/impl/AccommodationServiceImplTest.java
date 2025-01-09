@@ -72,8 +72,10 @@ class AccommodationServiceImplTest {
                 CREATE_ADDRESS_REQUEST_DTO.country(), CREATE_ADDRESS_REQUEST_DTO.city(),
                 CREATE_ADDRESS_REQUEST_DTO.state(), CREATE_ADDRESS_REQUEST_DTO.street(),
                 CREATE_ADDRESS_REQUEST_DTO.houseNumber())).thenReturn(false);
+
         //When
         AccommodationDto actual = accommodationService.save(CREATE_ACCOMMODATION_REQUEST_DTO);
+
         //Then
         AccommodationDto expected = ACCOMMODATION_RESPONSE_DTO;
         assertThat(expected).usingRecursiveComparison().isEqualTo(actual);
@@ -97,10 +99,12 @@ class AccommodationServiceImplTest {
                 CREATE_ADDRESS_REQUEST_DTO.country(), CREATE_ADDRESS_REQUEST_DTO.city(),
                 CREATE_ADDRESS_REQUEST_DTO.state(), CREATE_ADDRESS_REQUEST_DTO.street(),
                 CREATE_ADDRESS_REQUEST_DTO.houseNumber())).thenReturn(true);
+
         //When
         DuplicateResourceException exception = assertThrows(DuplicateResourceException.class, () ->
                 accommodationService.save(CREATE_ACCOMMODATION_REQUEST_DTO));
         String actual = exception.getMessage();
+
         //Then
         String expected = String.format(ADDRESS_DUPLICATE_RESOURCE_EXCEPTION,
                 CREATE_ADDRESS_REQUEST_DTO.country(), CREATE_ADDRESS_REQUEST_DTO.city(),

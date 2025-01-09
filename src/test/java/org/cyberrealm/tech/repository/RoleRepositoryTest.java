@@ -17,11 +17,9 @@ import org.springframework.test.context.jdbc.Sql;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = "classpath:database/roles/remove-roles.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@Sql(scripts = "classpath:database/roles/add-role-customer.sql",
-        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = {
-        "classpath:database/roles/remove-roles.sql"
-}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:database/roles/add-role-customer.sql")
+@Sql(scripts = "classpath:database/roles/remove-roles.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class RoleRepositoryTest {
     @Autowired
     private RoleRepository roleRepository;
@@ -31,6 +29,7 @@ class RoleRepositoryTest {
     void findByRole_validRole_returnsRole() {
         // When
         Optional<Role> foundRole = roleRepository.findByRole(FIRST_ROLE_NAME);
+
         // Then
         assertThat(foundRole).isPresent();
         assertThat(foundRole.get().getRole()).isEqualTo(FIRST_ROLE_NAME);
@@ -41,6 +40,7 @@ class RoleRepositoryTest {
     void findByRole_invalidRole_returnsEmpty() {
         // When
         Optional<Role> foundRole = roleRepository.findByRole(INVALID_ROLE_NAME);
+
         // Then
         assertThat(foundRole).isEmpty();
     }

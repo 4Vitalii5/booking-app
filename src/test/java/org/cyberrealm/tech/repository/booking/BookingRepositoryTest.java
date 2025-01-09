@@ -29,7 +29,7 @@ import org.springframework.test.context.jdbc.Sql;
         "classpath:database/users/add-users.sql",
         "classpath:database/accommodations/add-accommodations.sql",
         "classpath:database/bookings/add-bookings.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+})
 @Sql(scripts = {
         "classpath:database/bookings/remove-bookings.sql",
         "classpath:database/users/remove-users.sql",
@@ -45,6 +45,7 @@ class BookingRepositoryTest {
     void findById_validId_returnsBooking() {
         // When
         Optional<Booking> foundBooking = bookingRepository.findById(FIRST_BOOKING_ID);
+
         // Then
         assertThat(foundBooking).isPresent();
         assertThat(foundBooking.get().getId()).isEqualTo(FIRST_BOOKING_ID);
@@ -55,6 +56,7 @@ class BookingRepositoryTest {
     void findById_invalidId_returnsEmpty() {
         // When
         Optional<Booking> foundBooking = bookingRepository.findById(INVALID_BOOKING_ID);
+
         // Then
         assertThat(foundBooking).isEmpty();
     }
@@ -64,6 +66,7 @@ class BookingRepositoryTest {
     void findAllByUserId_validUserId_returnsBookings() {
         // When
         List<Booking> bookings = bookingRepository.findAllByUserId(FIRST_USER_ID);
+
         // Then
         assertThat(bookings).isNotEmpty();
         assertThat(bookings.get(0).getUser().getId()).isEqualTo(FIRST_USER_ID);
@@ -74,6 +77,7 @@ class BookingRepositoryTest {
     void findByUserId_pageable_returnsBookingsPage() {
         // When
         List<Booking> bookingsPage = bookingRepository.findByUserId(FIRST_USER_ID, PAGEABLE);
+
         // Then
         assertThat(bookingsPage).isNotEmpty();
         assertThat(bookingsPage.get(0).getUser().getId()).isEqualTo(FIRST_USER_ID);
@@ -84,6 +88,7 @@ class BookingRepositoryTest {
     void findAll_withSpecificationAndPageable_returnsBookingsPage() {
         // When
         Page<Booking> bookingPage = bookingRepository.findAll(BOOKING_SPECIFICATION, PAGEABLE);
+
         // Then
         assertThat(bookingPage.getContent()).isNotEmpty();
         assertThat(bookingPage.getContent().get(0).getUser().getId()).isEqualTo(FIRST_USER_ID);
@@ -95,6 +100,7 @@ class BookingRepositoryTest {
         // When
         int count = bookingRepository.countOverlappingBookings(FIRST_ACCOMMODATION_ID,
                 CHECK_IN_DATE, CHECK_OUT_DATE);
+
         // Then
         assertThat(count).isGreaterThan(0);
     }
@@ -104,8 +110,8 @@ class BookingRepositoryTest {
     void findAllByCheckOutDateBeforeAndStatusNot_validData_returnsBookings() {
         // When
         List<Booking> bookings = bookingRepository.findAllByCheckOutDateBeforeAndStatusNot(
-                CHECK_OUT_DATE, Booking.BookingStatus.CANCELED
-        );
+                CHECK_OUT_DATE, Booking.BookingStatus.CANCELED);
+
         // Then
         assertThat(bookings).isNotEmpty();
         assertThat(bookings.get(0).getStatus()).isNotEqualTo(Booking.BookingStatus.CANCELED);
@@ -116,6 +122,7 @@ class BookingRepositoryTest {
     void numberOfDays_validBookingId_returnsDays() {
         // When
         int days = bookingRepository.numberOfDays(FIRST_BOOKING_ID);
+
         // Then
         assertThat(days).isEqualTo(NUMBER_OF_DAYS);
     }

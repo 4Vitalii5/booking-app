@@ -34,8 +34,7 @@ public class AuthenticationControllerTest {
     @Test
     @DisplayName("Register a new user")
     @WithMockUser(username = FIRST_USER_EMAIL, roles = "CUSTOMER")
-    @Sql(scripts = "classpath:database/roles/add-roles.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/roles/add-roles.sql")
     @Sql(scripts = {
             "classpath:database/users_roles/remove-users_roles.sql",
             "classpath:database/roles/remove-roles.sql",
@@ -48,6 +47,7 @@ public class AuthenticationControllerTest {
                         .content(objectMapper.writeValueAsString(USER_REGISTRATION_REQUEST_DTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         UserResponseDto responseDto = objectMapper.readValue(jsonResponse, UserResponseDto.class);
@@ -62,7 +62,7 @@ public class AuthenticationControllerTest {
             "classpath:database/roles/add-roles.sql",
             "classpath:database/users/add-users.sql",
             "classpath:database/users_roles/add-users_roles.sql"
-    }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    })
     @Sql(scripts = {
             "classpath:database/users_roles/remove-users_roles.sql",
             "classpath:database/roles/remove-roles.sql",
@@ -75,6 +75,7 @@ public class AuthenticationControllerTest {
                         .content(objectMapper.writeValueAsString(USER_LOGIN_REQUEST_DTO)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         // Then
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         System.out.println(jsonResponse);
@@ -86,8 +87,7 @@ public class AuthenticationControllerTest {
 
     @Test
     @DisplayName("Register user with existing email")
-    @Sql(scripts = "classpath:database/roles/add-roles.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/roles/add-roles.sql")
     @Sql(scripts = {
             "classpath:database/users_roles/remove-users_roles.sql",
             "classpath:database/roles/remove-roles.sql",

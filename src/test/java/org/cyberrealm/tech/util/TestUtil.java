@@ -207,25 +207,13 @@ public class TestUtil {
 
     //Booking
     public static final CreateBookingRequestDto CREATE_BOOKING_REQUEST_DTO =
-            new CreateBookingRequestDto(
-                    CHECK_IN_DATE,
-                    CHECK_OUT_DATE,
-                    FIRST_ACCOMMODATION_ID
-            );
+            new CreateBookingRequestDto(CHECK_IN_DATE, CHECK_OUT_DATE, FIRST_ACCOMMODATION_ID);
 
     public static final CreateBookingRequestDto UPDATE_BOOKING_REQUEST_DTO =
-            new CreateBookingRequestDto(
-                    CHECK_IN_DATE,
-                    CHECK_OUT_DATE,
-                    FIRST_ACCOMMODATION_ID
-            );
+            new CreateBookingRequestDto(CHECK_IN_DATE, CHECK_OUT_DATE, FIRST_ACCOMMODATION_ID);
 
     public static final CreateBookingRequestDto INVALID_CREATE_BOOKING_REQUEST_DTO =
-            new CreateBookingRequestDto(
-                    CHECK_IN_DATE,
-                    CHECK_OUT_DATE,
-                    INVALID_ACCOMMODATION_ID
-            );
+            new CreateBookingRequestDto(CHECK_IN_DATE, CHECK_OUT_DATE, INVALID_ACCOMMODATION_ID);
 
     public static final BookingDto BOOKING_RESPONSE_DTO = new BookingDto(
             FIRST_BOOKING_ID,
@@ -252,9 +240,7 @@ public class TestUtil {
 
     //Payments
     public static final CreatePaymentRequestDto CREATE_PAYMENT_REQUEST_DTO =
-            new CreatePaymentRequestDto(
-                    FIRST_BOOKING_ID
-            );
+            new CreatePaymentRequestDto(FIRST_BOOKING_ID);
 
     public static final PaymentDto PAYMENT_RESPONSE_DTO = new PaymentDto(
             FIRST_PAYMENT_ID,

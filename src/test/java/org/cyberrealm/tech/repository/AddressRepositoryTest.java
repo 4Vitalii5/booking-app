@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = {
         "classpath:database/addresses/add-addresses.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+})
 @Sql(scripts = {
         "classpath:database/addresses/remove-addresses.sql"
 }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -32,6 +32,7 @@ class AddressRepositoryTest {
     void existsByCountryAndCityAndStateAndStreetAndHouseNumber_validData_returnsTrue() {
         //Given
         Address address = getFirstAddress();
+
         // When
         boolean exists = addressRepository.existsByCountryAndCityAndStateAndStreetAndHouseNumber(
                 address.getCountry(),
@@ -40,6 +41,7 @@ class AddressRepositoryTest {
                 address.getStreet(),
                 address.getHouseNumber()
         );
+
         // Then
         assertThat(exists).isTrue();
     }
@@ -50,6 +52,7 @@ class AddressRepositoryTest {
     void existsByCountryAndCityAndStateAndStreetAndHouseNumber_invalidData_returnsFalse() {
         //Given
         Address invalidAddress = getInvalidAddress();
+
         // When
         boolean exists = addressRepository.existsByCountryAndCityAndStateAndStreetAndHouseNumber(
                 invalidAddress.getCountry(),
@@ -58,6 +61,7 @@ class AddressRepositoryTest {
                 invalidAddress.getStreet(),
                 invalidAddress.getHouseNumber()
         );
+
         // Then
         assertThat(exists).isFalse();
     }
@@ -68,6 +72,7 @@ class AddressRepositoryTest {
     void findByCountryAndCityAndStateAndStreetAndHouseNumber_validData_returnsAddress() {
         // Given
         Address expected = getFirstAddress();
+
         // When
         Optional<Address> actual =
                 addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
@@ -77,6 +82,7 @@ class AddressRepositoryTest {
                         expected.getStreet(),
                         expected.getHouseNumber()
                 );
+
         // Then
         assertThat(actual).isNotNull();
         assertThat(actual).usingRecursiveComparison().isEqualTo(Optional.of(expected));
@@ -88,6 +94,7 @@ class AddressRepositoryTest {
     void findByCountryAndCityAndStateAndStreetAndHouseNumber_invalidData_returnsNull() {
         //Given
         Address invalidAddress = getInvalidAddress();
+
         // When
         Optional<Address> foundAddress =
                 addressRepository.findByCountryAndCityAndStateAndStreetAndHouseNumber(
@@ -98,6 +105,7 @@ class AddressRepositoryTest {
                         invalidAddress.getHouseNumber()
                 );
         // Then
+
         assertThat(foundAddress).isEmpty();
     }
 }

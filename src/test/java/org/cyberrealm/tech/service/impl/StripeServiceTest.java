@@ -1,7 +1,10 @@
 package org.cyberrealm.tech.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.cyberrealm.tech.util.TestConstants.CANNOT_CREATE_SESSION;
 import static org.cyberrealm.tech.util.TestConstants.EXPIRED;
+import static org.cyberrealm.tech.util.TestConstants.EXPIRED_STRIPE_SESSIONS;
+import static org.cyberrealm.tech.util.TestConstants.NOT_FOUND_EXPIRED_PAYMENTS;
 import static org.cyberrealm.tech.util.TestConstants.SESSION_ID;
 import static org.cyberrealm.tech.util.TestUtil.API_EXCEPTION;
 import static org.cyberrealm.tech.util.TestUtil.DESCRIPTION_FOR_STRIPE_DTO;
@@ -40,21 +43,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class StripeServiceTest {
     @Mock
     private PaymentRepository paymentRepository;
-
     @Mock
     private BookingRepository bookingRepository;
-
     @InjectMocks
     private StripeService stripeService;
 
     @Test
     @DisplayName("Create stripe session with valid data")
     void createStripeSession_validStripeDto_returnsSession() {
-        //Given
-        Session session = new Session();
         try (MockedStatic<Session> mockedSession = Mockito.mockStatic(Session.class)) {
+            //Given
             mockedSession.when(() -> Session.create(any(SessionCreateParams.class)))
-                    .thenReturn(session);
+                    .thenReturn(SESSION);
 
             //When
             Session actualSession = stripeService.createStripeSession(DESCRIPTION_FOR_STRIPE_DTO);
@@ -75,9 +75,13 @@ class StripeServiceTest {
                     .thenThrow(API_EXCEPTION);
 
             //When
+            StripeProcessingException exception = assertThrows(StripeProcessingException.class,
+                    () -> stripeService.createStripeSession(DESCRIPTION_FOR_STRIPE_DTO));
+            String actual = exception.getMessage();
+
             //Then
-            assertThrows(StripeProcessingException.class, () ->
-                    stripeService.createStripeSession(DESCRIPTION_FOR_STRIPE_DTO));
+            String expected = CANNOT_CREATE_SESSION;
+            assertThat(actual).isEqualTo(expected);
             mockedSession.verify(() -> Session.create(any(SessionCreateParams.class)),
                     times(1));
         }
@@ -86,12 +90,11 @@ class StripeServiceTest {
     @Test
     @DisplayName("Renew session link for expired payment")
     void renewSession_expiredPayment_returnsSession() throws MalformedURLException {
-        //Given
-        Payment payment = getExpiredPayment();
-        Session session = new Session();
         try (MockedStatic<Session> mockedSession = Mockito.mockStatic(Session.class)) {
+            //Given
+            Payment payment = getExpiredPayment();
             mockedSession.when(() -> Session.create(any(SessionCreateParams.class)))
-                    .thenReturn(session);
+                    .thenReturn(SESSION);
 
             //When
             Session actualSession = stripeService.renewSession(payment);
@@ -112,9 +115,13 @@ class StripeServiceTest {
         payment.setStatus(Payment.PaymentStatus.PAID);
 
         //When
-        //Then
-        assertThrows(StripeProcessingException.class, () ->
+        StripeProcessingException exception = assertThrows(StripeProcessingException.class, () ->
                 stripeService.renewSession(payment));
+        String actual = exception.getMessage();
+
+        //Then
+        String expected = String.format(NOT_FOUND_EXPIRED_PAYMENTS, payment.getId());
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -154,9 +161,13 @@ class StripeServiceTest {
                     .thenThrow(API_EXCEPTION);
 
             //When
+            StripeProcessingException exception = assertThrows(StripeProcessingException.class,
+                    () -> stripeService.checkExpiredSession());
+            String actual = exception.getMessage();
+
             //Then
-            assertThrows(StripeProcessingException.class, () ->
-                    stripeService.checkExpiredSession());
+            String expected = EXPIRED_STRIPE_SESSIONS;
+            assertThat(actual).isEqualTo(expected);
         }
     }
 }

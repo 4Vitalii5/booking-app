@@ -54,21 +54,16 @@ public class StripeService {
                                         .builder()
                                         .setCurrency(DEFAULT_CURRENCY)
                                         .setUnitAmountDecimal(
-                                                stripeDto.total().multiply(CENTS_AMOUNT)
-                                        )
+                                                stripeDto.total().multiply(CENTS_AMOUNT))
                                         .setProductData(
                                                 SessionCreateParams.LineItem.PriceData.ProductData
                                                         .builder()
-                                                        .setName(
-                                                                "Booking #"
+                                                        .setName("Booking #"
                                                                         + stripeDto.bookingId())
                                                         .setDescription(stripeDto.description())
-                                                        .build()
-                                        )
-                                        .build()
-                                )
-                                .build()
-                )
+                                                        .build())
+                                        .build())
+                                .build())
                 .build();
         try {
             return Session.create(params);
@@ -86,8 +81,7 @@ public class StripeService {
             return createStripeSession(stripeDto);
         } else {
             throw new StripeProcessingException("Cannot renew session for payment with id:"
-                    + payment.getId()
-                    + ". Which has not expired.");
+                    + payment.getId() + ". Which has not expired.");
         }
     }
 
