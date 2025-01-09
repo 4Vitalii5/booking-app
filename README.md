@@ -105,5 +105,17 @@ For easy testing and interaction with the API, you can use the Postman collectio
 
 - Watch a [Loom Video](https://www.loom.com/share/3f1840b2718641c2874d44f6e77dc983?sid=6fb2c9d2-f3a2-4e90-9930-e3bf8da12e19) to see how the project works.
 
+## Author
+
+👤 **Vitalii Pavlyk**
+
+- Linkedin: [@VitaliiPavlyk](https://www.linkedin.com/in/vitalii-pavlyk-82b5aa1a1/)
+- Github: [@4Vitalii5](https://github.com/4Vitalii5)
+
+## 📝 License
+
+Copyright © 2025 [Vitalii Pavlyk](https://github.com/4Vitalii5).<br />
+This project is [MIT](https://github.com/4Vitalii5/booking-app/blob/631f606cff931baeebb3458c3022d033bc5466ac/LICENSE) licensed.
+
 ## Happy Coding!
 ---
