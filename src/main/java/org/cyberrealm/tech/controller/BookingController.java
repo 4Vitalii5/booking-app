@@ -47,8 +47,7 @@ public class BookingController {
     @Operation(summary = "Get bookings by user ID and status",
             description = "Retrieves bookings based on user ID and their status.")
     public List<BookingDto> searchBookings(
-            @Valid BookingSearchParameters searchParameters, Pageable pageable
-    ) {
+            @Valid BookingSearchParameters searchParameters, Pageable pageable) {
         return bookingService.search(searchParameters, pageable);
     }
 
