@@ -83,9 +83,24 @@ Our mission was to develop an advanced online rental management system for housi
 
 ## Challenges Faced and Solutions
 
-1. **Real-Time Property Availability**: Implemented a robust database schema and optimized queries to ensure real-time property availability.
-2. **Payment Processing**: Integrated Stripe API to handle secure and efficient payment transactions.
-3. **Notification System**: Set up a notification system using Telegram API to alert administrators about important events.
+1. **Real-Time Property Availability**:
+
+   - **Challenge:** Ensuring accurate real-time property availability was difficult due to inefficient database queries.
+   - **Solution:** An effective database schema was developed and implemented and queries were optimized, which allowed
+     us to quickly obtain up-to-date information about real estate availability in real time.
+
+2. **Payment Processing**:
+
+   - **Challenge:** Integrating a secure and efficient payment processing system was challenging due to the complexity of
+     working with external payment APIs.
+   - **Solution:** Stripe API was integrated to process payment transactions, ensuring reliable and secure transactions.
+     This allowed users to conveniently make payments using credit cards.
+
+3. **Notification System**:
+   - **Challenge:** There was a need to promptly notify administrators about important events, such as new bookings or
+     cancellations.
+   - **Solution:** A notification system was set up using the Telegram API, which allowed for quick and efficient
+     communication so that administrators were kept up to date with all bookings and payments.
 
 ## Tests
 
