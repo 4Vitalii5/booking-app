@@ -55,11 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
         BigDecimal total = calculateTotalPrice(booking);
         Payment payment = paymentMapper.toEntity(requestDto);
         Session session = stripeService.createStripeSession(
-                new DescriptionForStripeDto(
-                        requestDto.bookingId(),
-                        total,
-                        getDescription(booking)
-                )
+                new DescriptionForStripeDto(requestDto.bookingId(), total, getDescription(booking))
         );
         payment.setAmountToPay(total);
         payment.setSessionUrl(getSessionUrl(session));
@@ -77,8 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.getBooking().setStatus(Booking.BookingStatus.CONFIRMED);
         paymentRepository.save(payment);
         sendNotification("Payment with id:" + payment.getId() + "\n"
-                + "For booking: " + getDescription(payment.getBooking())
-                + " successfully paid.");
+                + "For booking: " + getDescription(payment.getBooking()) + " successfully paid.");
         return paymentMapper.toDtoWithoutSession(payment);
     }
 
@@ -128,7 +123,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Payment getPayment(String sessionId) {
         return paymentRepository.findBySessionId(sessionId).orElseThrow(() ->
-                new EntityNotFoundException("Can't find payment by session id:" + sessionId));
+                new EntityNotFoundException("Can't find payment by session id:" + sessionId)
+        );
     }
 
     private List<Long> getBookingIdsByRole(Long userId, User currentUser) {
