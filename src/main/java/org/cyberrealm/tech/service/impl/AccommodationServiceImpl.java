@@ -99,7 +99,8 @@ public class AccommodationServiceImpl implements AccommodationService {
                                 requestDto.country(), requestDto.city(), requestDto.state(),
                                 requestDto.street(), requestDto.houseNumber(),
                                 requestDto.postalCode())
-                ));
+                )
+        );
     }
 
     private void checkAddressAvailability(CreateAccommodationRequestDto requestDto,
