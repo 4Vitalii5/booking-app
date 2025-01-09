@@ -1,8 +1,26 @@
-<h1 style="text-align: center;">Accommodation Booking Service</h1>
+<!-- LOGO -->
+<br />
+<h1>
+<p align="center">
+  <img src="src/main/resources/images/Accommodation Booking Service logo.png" alt="Project Logo" width="200"/>
+  <br>Accommodation Booking Service
+</h1>
 
-<img src="src/main/resources/images/Accommodation Booking Service logo.png" alt="Project Logo" width="200"/>
+<p align="center">
+  <a href="#about-the-project">About The Project</a> •
+  <a href="#technologies-and-tools-used">Technologies</a> •
+  <a href="#main-features">Main Features</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#setup-and-usage">Setup</a> •
+  <a href="#docker-setup">Docker</a> •
+  <a href="#challenges-faced-and-solutions">Challenges</a> •
+  <a href="#tests">Tests</a> •
+  <a href="#postman-collection">Postman</a> •
+  <a href="#video-demonstration">Demonstration</a> •
+  <a href="#author">Author</a>
+</p>
 
-## Introduction
+## About The Project
 
 In this project, we created a booking service for renting apartments or houses in any region. Bookings are available for the period selected by users. Payment for bookings can be conveniently made through the Stripe service using a credit card.
 Our mission was to develop an advanced online rental management system for housing. This system will not only simplify the tasks of service administration but also provide tenants with a seamless and efficient platform for securing housing, changing the way housing is rented.
@@ -27,7 +45,7 @@ Our mission was to develop an advanced online rental management system for housi
 - **Payment Processing**: Handle payment sessions and responses using Stripe. 
 - **Notification System**: Send notifications about new bookings, cancellations, and payments using Telegram.
 
-### Architecture
+## Architecture
 
 ![Architecture](src/main/resources/images/architecture.png)
 
@@ -71,7 +89,7 @@ Our mission was to develop an advanced online rental management system for housi
 
 ## Tests
 
-## Test Results and Coverage
+### Test Results and Coverage
 
 | Metric        | Value |
 |---------------|-------|
@@ -93,7 +111,7 @@ Our mission was to develop an advanced online rental management system for housi
 
 For easy testing and interaction with the API, you can use the Postman collection containing all necessary requests.
 
-### Usage
+### 🚀Usage
 
 1. Open Postman and import the [Bokking_App.postman_collection.json](src/main/resources/postman/Booking_App.postman_collection.json).
 2. Navigate to the imported Accommodation Booking Service collection.
@@ -118,4 +136,5 @@ Copyright © 2025 [Vitalii Pavlyk](https://github.com/4Vitalii5).<br />
 This project is [MIT](https://github.com/4Vitalii5/booking-app/blob/631f606cff931baeebb3458c3022d033bc5466ac/LICENSE) licensed.
 
 ## Happy Coding!
+
 ---
