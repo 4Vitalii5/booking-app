@@ -62,22 +62,16 @@ import org.springframework.data.jpa.domain.Specification;
 class BookingServiceImplTest {
     @Mock
     private BookingRepository bookingRepository;
-
     @Spy
     private BookingMapper bookingMapper = new BookingMapperImpl();
-
     @Mock
     private BookingSpecificationBuilder bookingSpecificationBuilder;
-
     @Mock
     private AccommodationRepository accommodationRepository;
-
     @Mock
     private NotificationService notificationService;
-
     @Mock
     private PaymentRepository paymentRepository;
-
     @InjectMocks
     private BookingServiceImpl bookingService;
 
