@@ -34,11 +34,10 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toModel(requestDto);
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RegistrationException("User with email: "
-                    + user.getEmail()
-                    + " already exists");
+                    + user.getEmail() + " already exists");
         }
-        Role role = roleRepository.findByRole(DEFAULT_ROLE).orElseThrow(
-                () -> new EntityNotFoundException("Role: " + DEFAULT_ROLE + " not found")
+        Role role = roleRepository.findByRole(DEFAULT_ROLE).orElseThrow(() ->
+                new EntityNotFoundException("Role: " + DEFAULT_ROLE + " not found")
         );
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Set.of(role));
@@ -51,8 +50,8 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto update(Long id, UserRoleUpdateDto requestDto) {
         User user = getUserById(id);
         Role.RoleName newRoleName = Role.RoleName.valueOf(requestDto.newRole());
-        Role newRole = roleRepository.findByRole(newRoleName).orElseThrow(
-                () -> new EntityNotFoundException("Role: " + requestDto.newRole() + " not found")
+        Role newRole = roleRepository.findByRole(newRoleName).orElseThrow(() ->
+                new EntityNotFoundException("Role: " + requestDto.newRole() + " not found")
         );
         Set<Role> roles = user.getRoles();
         roles.add(newRole);
@@ -75,8 +74,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find user by id:" + id)
+        return userRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Can't find user by id:" + id)
         );
     }
 }
