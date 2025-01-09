@@ -118,8 +118,7 @@ class UserServiceImplTest {
         roles.add(role);
         user.setRoles(roles);
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
-        when(roleRepository.findByRole(any(Role.RoleName.class)))
-                .thenReturn(Optional.of(role));
+        when(roleRepository.findByRole(any(Role.RoleName.class))).thenReturn(Optional.of(role));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         //When
@@ -241,10 +240,7 @@ class UserServiceImplTest {
     @DisplayName("UpdateUserById should throw EntityNotFoundException when user not found")
     void updateUserById_nonExistingUser_throwsEntityNotFoundException() {
         //Given
-        UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto(
-                NEW_FIRST_NAME,
-                NEW_LAST_NAME
-        );
+        UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto(NEW_FIRST_NAME, NEW_LAST_NAME);
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         //When
@@ -292,5 +288,4 @@ class UserServiceImplTest {
         assertThat(actual).isEqualTo(expected);
         verify(userRepository, times(1)).findById(FIRST_USER_ID);
     }
-
 }
