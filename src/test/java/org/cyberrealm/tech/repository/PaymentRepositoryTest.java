@@ -28,7 +28,7 @@ import org.springframework.test.context.jdbc.Sql;
         "classpath:database/accommodations/add-accommodations.sql",
         "classpath:database/bookings/add-bookings.sql",
         "classpath:database/payments/add-payments.sql"
-}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+})
 @Sql(scripts = {
         "classpath:database/payments/remove-payments.sql",
         "classpath:database/bookings/remove-bookings.sql",
@@ -45,6 +45,7 @@ class PaymentRepositoryTest {
     void findBySessionId_validSessionId_returnsPayment() {
         // When
         Optional<Payment> foundPayment = paymentRepository.findBySessionId(SESSION_ID);
+
         // Then
         assertThat(foundPayment).isPresent();
         assertThat(foundPayment.get().getSessionId()).isEqualTo(SESSION_ID);
@@ -55,6 +56,7 @@ class PaymentRepositoryTest {
     void findBySessionId_invalidSessionId_returnsEmpty() {
         // When
         Optional<Payment> foundPayment = paymentRepository.findBySessionId(INVALID_SESSION_ID);
+
         // Then
         assertThat(foundPayment).isEmpty();
     }
@@ -64,6 +66,7 @@ class PaymentRepositoryTest {
     void findByBookingId_validBookingId_returnsPayment() {
         // When
         Optional<Payment> foundPayment = paymentRepository.findByBookingId(FIRST_BOOKING_ID);
+
         // Then
         assertThat(foundPayment).isPresent();
         assertThat(foundPayment.get().getBooking().getId()).isEqualTo(FIRST_BOOKING_ID);
@@ -74,6 +77,7 @@ class PaymentRepositoryTest {
     void findByBookingId_invalidBookingId_returnsEmpty() {
         // When
         Optional<Payment> foundPayment = paymentRepository.findByBookingId(INVALID_BOOKING_ID);
+
         // Then
         assertThat(foundPayment).isEmpty();
     }
@@ -83,6 +87,7 @@ class PaymentRepositoryTest {
     void existsBySessionId_validSessionId_returnsTrue() {
         // When
         boolean exists = paymentRepository.existsBySessionId(SESSION_ID);
+
         // Then
         assertThat(exists).isTrue();
     }
@@ -92,6 +97,7 @@ class PaymentRepositoryTest {
     void existsBySessionId_invalidSessionId_returnsFalse() {
         // When
         boolean exists = paymentRepository.existsBySessionId(INVALID_SESSION_ID);
+
         // Then
         assertThat(exists).isFalse();
     }
@@ -101,6 +107,7 @@ class PaymentRepositoryTest {
     void existsPendingPaymentsByUserId_validUserId_returnsTrue() {
         // When
         boolean exists = paymentRepository.existsPendingPaymentsByUserId(FIRST_USER_ID);
+
         // Then
         assertThat(exists).isTrue();
     }
@@ -110,6 +117,7 @@ class PaymentRepositoryTest {
     void existsPendingPaymentsByUserId_invalidUserId_returnsFalse() {
         // When
         boolean exists = paymentRepository.existsPendingPaymentsByUserId(INVALID_USER_ID);
+
         // Then
         assertThat(exists).isFalse();
     }
@@ -119,6 +127,7 @@ class PaymentRepositoryTest {
     void findBookingBySessionId_validSessionId_returnsBooking() {
         // When
         Optional<Booking> foundBooking = paymentRepository.findBookingBySessionId(SESSION_ID);
+
         // Then
         assertThat(foundBooking).isPresent();
         assertThat(foundBooking.get().getId()).isEqualTo(FIRST_BOOKING_ID);
@@ -130,6 +139,7 @@ class PaymentRepositoryTest {
         // When
         Optional<Booking> foundBooking = paymentRepository.findBookingBySessionId(
                 INVALID_SESSION_ID);
+
         // Then
         assertThat(foundBooking).isEmpty();
     }
@@ -140,6 +150,7 @@ class PaymentRepositoryTest {
         // When
         Optional<Payment> foundPayment = paymentRepository.findByIdAndUserId(FIRST_PAYMENT_ID,
                 FIRST_USER_ID);
+
         // Then
         assertThat(foundPayment).isPresent();
         assertThat(foundPayment.get().getId()).isEqualTo(FIRST_PAYMENT_ID);
@@ -151,6 +162,7 @@ class PaymentRepositoryTest {
         // When
         Optional<Payment> foundPayment = paymentRepository.findByIdAndUserId(INVALID_PAYMENT_ID,
                 INVALID_USER_ID);
+
         // Then
         assertThat(foundPayment).isEmpty();
     }
